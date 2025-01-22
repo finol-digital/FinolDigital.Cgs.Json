@@ -658,7 +658,7 @@
         },
         "txt": {
           "type": "string",
-          "description": "An optional path that can be used to override the url. See @CardGameDef.json#/properties/allDecksUrlTxtRoot"
+          "description": "An optional path that can be used to override the url. See @cgs.json#/properties/allDecksUrlTxtRoot"
         },
         "url": {
           "type": "string",
