@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://cardgamesim.finoldigital.com/schema/CardGameDef.json",
-  "title": "CGS Custom Card Game",
+  "id": "https://cardgamesim.finoldigital.com/schema/cgs.json",
+  "title": "CGS Card Game Specification",
   "type": "object",
-  "description": "Card Game Simulator (CGS) custom card game specification",
+  "description": "Card Game Simulator (CGS) Card Game Specification",
   "additionalProperties": false,
   "required": [
     "name"

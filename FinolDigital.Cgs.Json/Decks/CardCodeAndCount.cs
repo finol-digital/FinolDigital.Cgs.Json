@@ -1,6 +1,6 @@
 // https://github.com/RiotGames/LoRDeckCodes/blob/main/LoRDeckCodes/CardCodeAndCount.cs
 
-namespace FinolDigital.Cgs.CardGameDef.Decks
+namespace FinolDigital.Cgs.Json.Decks
 {
     public class CardCodeAndCount
     {

@@ -6,18 +6,18 @@
     <Company>Finol Digital LLC</Company>
     <Authors>David Finol</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>Card Game Simulator (CGS) custom card game specification</Description>
-    <PackageProjectUrl>https://www.cardgamesimulator.com/custom.html</PackageProjectUrl>
+    <Description>Card Game Simulator (CGS) Card Game Specification</Description>
+    <PackageProjectUrl>https://github.com/finol-digital/FinolDigital.Cgs.Json</PackageProjectUrl>
     <PackageIcon>Logo.png</PackageIcon>
     <PackageIconUrl />
-    <PackageTags>card game simulator json schema</PackageTags>
-    <PackageReleaseNotes>Card Game Simulator (CGS) custom card game specification</PackageReleaseNotes>
+    <PackageTags>card game simulator json schema specification</PackageTags>
+    <PackageReleaseNotes>Card Game Simulator (CGS) Card Game Specification</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/finol-digital/FinolDigital.Cgs.CardGameDef</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Title>CGS Custom Card Game</Title>
+    <Title>CGS Card Game Specification</Title>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Copyright>Copyright (c) Finol Digital LLC 2023</Copyright>
+    <Copyright>Copyright (c) Finol Digital LLC</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

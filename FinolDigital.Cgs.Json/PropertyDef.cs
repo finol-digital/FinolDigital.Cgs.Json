@@ -1,4 +1,4 @@
-namespace FinolDigital.Cgs.CardGameDef
+namespace FinolDigital.Cgs.Json
 {
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;

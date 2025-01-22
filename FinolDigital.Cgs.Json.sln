@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinolDigital.Cgs.CardGameDef", "FinolDigital.Cgs.CardGameDef\FinolDigital.Cgs.CardGameDef.csproj", "{97F6023F-DC26-47C9-A047-82D0EDBD04BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinolDigital.Cgs.Json", "FinolDigital.Cgs.Json\FinolDigital.Cgs.Json.csproj", "{97F6023F-DC26-47C9-A047-82D0EDBD04BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaGeneration", "SchemaGeneration\SchemaGeneration.csproj", "{EE6FC5DC-D94D-4FF3-B705-CF44772E22B7}"
 EndProject

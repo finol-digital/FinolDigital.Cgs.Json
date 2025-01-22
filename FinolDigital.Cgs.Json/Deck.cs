@@ -1,4 +1,4 @@
-namespace FinolDigital.Cgs.CardGameDef
+namespace FinolDigital.Cgs.Json
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@ namespace FinolDigital.Cgs.CardGameDef
     using System.Linq;
     using System.Runtime.Serialization;
     using System.Text;
-    using Cgs.CardGameDef.Decks;
+    using Cgs.Json.Decks;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 

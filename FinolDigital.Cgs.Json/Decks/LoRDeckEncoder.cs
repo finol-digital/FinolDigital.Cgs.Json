@@ -1,6 +1,6 @@
 // https://github.com/RiotGames/LoRDeckCodes/blob/main/LoRDeckCodes/LoRDeckEncoder.cs
 
-namespace FinolDigital.Cgs.CardGameDef.Decks
+namespace FinolDigital.Cgs.Json.Decks
 {
     using System;
     using System.Collections.Generic;

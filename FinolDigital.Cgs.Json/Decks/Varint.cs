@@ -24,7 +24,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-namespace FinolDigital.Cgs.CardGameDef.Decks
+namespace FinolDigital.Cgs.Json.Decks
 {
     using System;
     using System.Collections.Generic;

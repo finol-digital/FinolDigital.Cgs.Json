@@ -36,41 +36,41 @@ jobs:
         dotnet-version: 6.0.x
     - name: Build
       run: dotnet build --configuration Release /p:Version=${VERSION}
-    - name: Upload FinolDigital.Cgs.CardGameDef.dll
+    - name: Upload FinolDigital.Cgs.Json.dll
       uses: actions/upload-artifact@v4
       with:
-        name: FinolDigital.Cgs.CardGameDef.dll
-        path: FinolDigital.Cgs.CardGameDef/bin/Release/netstandard2.1/FinolDigital.Cgs.CardGameDef.dll
+        name: FinolDigital.Cgs.Json.dll
+        path: FinolDigital.Cgs.Json/bin/Release/netstandard2.1/FinolDigital.Cgs.Json.dll
     - name: Generate schema
       run: dotnet SchemaGeneration/bin/Release/net6.0/SchemaGeneration.dll
     - name: Copy schema
-      run: cp CardGameDef.json schema/
-    - name: Upload CardGameDef.json
+      run: cp cgs.json schema/
+    - name: Upload cgs.json
       uses: actions/upload-artifact@v4
       with:
-        name: CardGameDef.json
-        path: CardGameDef.json
+        name: cgs.json
+        path: cgs.json
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION}
     - name: Upload nuget package
       uses: actions/upload-artifact@v4
       with:
-        name: FinolDigital.Cgs.CardGameDef.${{ steps.versioning.outputs.version }}.nupkg
-        path: FinolDigital.Cgs.CardGameDef/bin/Release/FinolDigital.Cgs.CardGameDef.${{ steps.versioning.outputs.version }}.nupkg
+        name: FinolDigital.Cgs.Json.${{ steps.versioning.outputs.version }}.nupkg
+        path: FinolDigital.Cgs.Json/bin/Release/FinolDigital.Cgs.Json.${{ steps.versioning.outputs.version }}.nupkg
     - name: Update nuget settings
       if: github.event.action == 'published'
       run: dotnet nuget add source --username davidmfinol@gmail.com --password ${{ secrets.CGS_PAT }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/finol-digital/index.json"
     - name: Push nuget package
       if: github.event.action == 'published'
-      run: dotnet nuget push "FinolDigital.Cgs.CardGameDef/bin/Release/FinolDigital.Cgs.CardGameDef.${VERSION}.nupkg" --source "github"
+      run: dotnet nuget push "FinolDigital.Cgs.Json/bin/Release/FinolDigital.Cgs.Json.${VERSION}.nupkg" --source "github"
     - name: Raise PR for schema
       if: github.event.action == 'published'
       uses: peter-evans/create-pull-request@v7
       with:
         token: ${{ secrets.CGS_PAT }}
         path: schema
-        branch: cardgamedef-${{ needs.build.outputs.version }}
-        title: CardGameDef ${{ needs.build.outputs.version }}
+        branch: cgsjson-${{ needs.build.outputs.version }}
+        title: Cgs.json ${{ needs.build.outputs.version }}
 
   updateCgs:
     name: Update CGS
@@ -81,7 +81,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          path: FinolDigital.Cgs.CardGameDef
+          path: FinolDigital.Cgs.Json
       - name: Checkout CGS project
         uses: actions/checkout@v4
         with:
@@ -89,20 +89,20 @@ jobs:
           token: ${{ secrets.CGS_PAT }}
           path: Card-Game-Simulator
           lfs: true
-      - name: Download FinolDigital.Cgs.CardGameDef.dll
+      - name: Download FinolDigital.Cgs.Json.dll
         uses: actions/download-artifact@v4
         with:
-          name: FinolDigital.Cgs.CardGameDef.dll
+          name: FinolDigital.Cgs.Json.dll
           path: Card-Game-Simulator/Assets/Plugins
-      - name: Download CardGameDef.json
+      - name: Download cgs.json
         uses: actions/download-artifact@v4
         with:
-          name: CardGameDef.json
+          name: cgs.json
           path: Card-Game-Simulator/docs/schema
       - name: Raise PR to Card-Game-Simulator
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.CGS_PAT }}
           path: Card-Game-Simulator
-          branch: cardgamedef-${{ needs.build.outputs.version }}
-          title: CardGameDef ${{ needs.build.outputs.version }}
+          branch: cgsjson-${{ needs.build.outputs.version }}
+          title: Cgs.json ${{ needs.build.outputs.version }}
