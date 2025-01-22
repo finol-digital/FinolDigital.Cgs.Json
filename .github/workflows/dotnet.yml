@@ -69,8 +69,8 @@ jobs:
       with:
         token: ${{ secrets.CGS_PAT }}
         path: schema
-        branch: cgsjson-${{ needs.build.outputs.version }}
-        title: Cgs.json ${{ needs.build.outputs.version }}
+        branch: cgsjson-${{ steps.versioning.outputs.version }}
+        title: FinolDigital.Cgs.Json ${{ steps.versioning.outputs.version }}
 
   updateCgs:
     name: Update CGS
@@ -105,4 +105,4 @@ jobs:
           token: ${{ secrets.CGS_PAT }}
           path: Card-Game-Simulator
           branch: cgsjson-${{ needs.build.outputs.version }}
-          title: Cgs.json ${{ needs.build.outputs.version }}
+          title: FinolDigital.Cgs.Json ${{ needs.build.outputs.version }}
