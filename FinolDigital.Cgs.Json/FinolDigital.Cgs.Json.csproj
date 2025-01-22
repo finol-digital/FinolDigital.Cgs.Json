@@ -12,7 +12,7 @@
     <PackageIconUrl />
     <PackageTags>card game simulator json schema specification</PackageTags>
     <PackageReleaseNotes>Card Game Simulator (CGS) Card Game Specification</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/finol-digital/FinolDigital.Cgs.CardGameDef</RepositoryUrl>
+    <RepositoryUrl>https://github.com/finol-digital/FinolDigital.Cgs.Json</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Title>CGS Card Game Specification</Title>

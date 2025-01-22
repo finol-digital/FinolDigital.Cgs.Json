@@ -13,7 +13,7 @@ namespace FinolDigital.Cgs.Json
 
         [JsonProperty]
         [Description(
-            "An optional path that can be used to override the url. See @CardGameDef.json#/properties/allDecksUrlTxtRoot")]
+            "An optional path that can be used to override the url. See https://cardgamesim.finoldigital.com/schema/cgs.json#/properties/allDecksUrlTxtRoot")]
         public string Txt { get; private set; }
 
         [JsonProperty]
