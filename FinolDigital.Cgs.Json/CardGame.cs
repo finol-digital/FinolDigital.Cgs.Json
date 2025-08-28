@@ -183,6 +183,11 @@ namespace FinolDigital.Cgs.Json
 
         [JsonProperty]
         [Description(
+            "When defining a Card in AllCards.json or AllSets.json, cardImageFileTypeIdentifier is the *Card:Property* that overrides the cardImageFileType for this Card. If <cardImageFileTypeIdentifier> is empty, this Card's image file will still be saved as <cardImageFileType>.")]
+        public string CardImageFileTypeIdentifier { get; set; } = "";
+
+        [JsonProperty]
+        [Description(
             "cardImageProperty is the *Card:Property* which points to the image for this Card. If <cardImageProperty> is empty, <cardImageUrl> will be used instead.")]
         public string CardImageProperty { get; set; } = "";
 
