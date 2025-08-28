@@ -63,14 +63,6 @@ jobs:
     - name: Push nuget package
       if: github.event.action == 'published'
       run: dotnet nuget push "FinolDigital.Cgs.Json/bin/Release/FinolDigital.Cgs.Json.${VERSION}.nupkg" --source "github"
-    - name: Raise PR for schema
-      if: github.event.action == 'published'
-      uses: peter-evans/create-pull-request@v7
-      with:
-        token: ${{ secrets.CGS_PAT }}
-        path: schema
-        branch: cgsjson-${{ steps.versioning.outputs.version }}
-        title: FinolDigital.Cgs.Json ${{ steps.versioning.outputs.version }}
 
   updateCgs:
     name: Update CGS
@@ -106,3 +98,11 @@ jobs:
           path: Card-Game-Simulator
           branch: cgsjson-${{ needs.build.outputs.version }}
           title: FinolDigital.Cgs.Json ${{ needs.build.outputs.version }}
+#    - name: Raise PR for schema
+#      if: github.event.action == 'published'
+#      uses: peter-evans/create-pull-request@v7
+#      with:
+#        token: ${{ secrets.CGS_PAT }}
+#        path: schema
+#        branch: cgsjson-${{ steps.versioning.outputs.version }}
+#        title: FinolDigital.Cgs.Json ${{ steps.versioning.outputs.version }}
