@@ -84,12 +84,12 @@ jobs:
           path: Card-Game-Simulator
           lfs: true
       - name: Download FinolDigital.Cgs.Json.dll
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: FinolDigital.Cgs.Json.dll
           path: Card-Game-Simulator/Assets/Plugins
       - name: Download cgs.json
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: cgs.json
           path: Card-Game-Simulator/docs/schema
