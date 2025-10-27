@@ -39,7 +39,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release /p:Version=${VERSION}
     - name: Upload FinolDigital.Cgs.Json.dll
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: FinolDigital.Cgs.Json.dll
         path: FinolDigital.Cgs.Json/bin/Release/netstandard2.1/FinolDigital.Cgs.Json.dll
@@ -48,14 +48,14 @@ jobs:
     - name: Copy schema
       run: cp cgs.json schema/
     - name: Upload cgs.json
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: cgs.json
         path: cgs.json
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION}
     - name: Upload nuget package
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: FinolDigital.Cgs.Json.${{ steps.versioning.outputs.version }}.nupkg
         path: FinolDigital.Cgs.Json/bin/Release/FinolDigital.Cgs.Json.${{ steps.versioning.outputs.version }}.nupkg
