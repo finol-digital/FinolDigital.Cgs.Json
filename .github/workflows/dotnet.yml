@@ -2,6 +2,8 @@
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
 name: .NET
+permissions:
+  contents: read
 
 on:
   push:
@@ -31,13 +33,13 @@ jobs:
         VERSION: ${{ steps.versioning.outputs.version }}
       run: echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 6.0.x
     - name: Build
       run: dotnet build --configuration Release /p:Version=${VERSION}
     - name: Upload FinolDigital.Cgs.Json.dll
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: FinolDigital.Cgs.Json.dll
         path: FinolDigital.Cgs.Json/bin/Release/netstandard2.1/FinolDigital.Cgs.Json.dll
@@ -46,14 +48,14 @@ jobs:
     - name: Copy schema
       run: cp cgs.json schema/
     - name: Upload cgs.json
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: cgs.json
         path: cgs.json
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION}
     - name: Upload nuget package
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: FinolDigital.Cgs.Json.${{ steps.versioning.outputs.version }}.nupkg
         path: FinolDigital.Cgs.Json/bin/Release/FinolDigital.Cgs.Json.${{ steps.versioning.outputs.version }}.nupkg
@@ -82,12 +84,12 @@ jobs:
           path: Card-Game-Simulator
           lfs: true
       - name: Download FinolDigital.Cgs.Json.dll
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: FinolDigital.Cgs.Json.dll
           path: Card-Game-Simulator/Assets/Plugins
       - name: Download cgs.json
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: cgs.json
           path: Card-Game-Simulator/docs/schema
