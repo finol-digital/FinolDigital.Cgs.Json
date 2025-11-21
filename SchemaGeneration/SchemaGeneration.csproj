@@ -8,8 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JsonSchema.Net.Generation" Version="3.0.3" />
-    <PackageReference Include="NJsonSchema" Version="10.8.0" />
+    <PackageReference Include="JsonSchema.Net.Generation" Version="5.1.1" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
+    <PackageReference Include="NJsonSchema" Version="11.5.2" />
+    <PackageReference Include="NJsonSchema.NewtonsoftJson" Version="11.5.2" />
   </ItemGroup>
 
   <ItemGroup>
