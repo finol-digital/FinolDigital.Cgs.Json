@@ -76,8 +76,9 @@ namespace FinolDigital.Cgs.Json
             int objectDelimiterIdx = Name.IndexOf(ObjectDelimiter, StringComparison.Ordinal);
             if (objectDelimiterIdx != -1)
                 Name = Name[..objectDelimiterIdx];
-
-            Type = objectDelimiterIdx != -1 ? PropertyType.Object : type;
+            Type = objectDelimiterIdx != -1 
+                ? (Name.EndsWith("[]") ? PropertyType.ObjectList : PropertyType.Object)
+                : type;
             Display = display ?? string.Empty;
             DisplayEmpty = displayEmpty ?? string.Empty;
             DisplayEmptyFirst = displayEmptyFirst;
