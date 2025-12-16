@@ -94,7 +94,7 @@ jobs:
           name: cgs.json
           path: Card-Game-Simulator/docs/schema
       - name: Raise PR to Card-Game-Simulator
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.CGS_PAT }}
           path: Card-Game-Simulator
@@ -102,7 +102,7 @@ jobs:
           title: FinolDigital.Cgs.Json ${{ needs.build.outputs.version }}
 #    - name: Raise PR for schema
 #      if: github.event.action == 'published'
-#      uses: peter-evans/create-pull-request@v7
+#      uses: peter-evans/create-pull-request@v8
 #      with:
 #        token: ${{ secrets.CGS_PAT }}
 #        path: schema
