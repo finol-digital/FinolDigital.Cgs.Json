@@ -8,6 +8,7 @@
     public enum GamePlayZoneType
     {
         [EnumMember(Value = "area")] Area,
+        [EnumMember(Value = "dice")] Dice,
         [EnumMember(Value = "horizontal")] Horizontal,
         [EnumMember(Value = "vertical")] Vertical
     }

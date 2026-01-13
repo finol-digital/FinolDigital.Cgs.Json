@@ -29,7 +29,7 @@
         public Float2 Size { get; private set; }
 
         [JsonProperty]
-        [Description("The Game Play Zone type from area, horizontal, or vertical")]
+        [Description("The Game Play Zone type from area, dice, horizontal, or vertical")]
         [DefaultValue("area")]
         public GamePlayZoneType Type { get; private set; } = GamePlayZoneType.Area;
 
