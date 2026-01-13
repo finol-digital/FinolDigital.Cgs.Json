@@ -20,7 +20,7 @@ jobs:
       version: ${{ steps.versioning.outputs.version }}
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
     - name: Get Version
@@ -39,7 +39,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release /p:Version=${VERSION}
     - name: Upload FinolDigital.Cgs.Json.dll
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: FinolDigital.Cgs.Json.dll
         path: FinolDigital.Cgs.Json/bin/Release/netstandard2.1/FinolDigital.Cgs.Json.dll
@@ -48,14 +48,14 @@ jobs:
     - name: Copy schema
       run: cp cgs.json schema/
     - name: Upload cgs.json
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: cgs.json
         path: cgs.json
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION}
     - name: Upload nuget package
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: FinolDigital.Cgs.Json.${{ steps.versioning.outputs.version }}.nupkg
         path: FinolDigital.Cgs.Json/bin/Release/FinolDigital.Cgs.Json.${{ steps.versioning.outputs.version }}.nupkg
@@ -73,28 +73,28 @@ jobs:
     if: github.event.action == 'published'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: FinolDigital.Cgs.Json
       - name: Checkout CGS project
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: finol-digital/Card-Game-Simulator
           token: ${{ secrets.CGS_PAT }}
           path: Card-Game-Simulator
           lfs: true
       - name: Download FinolDigital.Cgs.Json.dll
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: FinolDigital.Cgs.Json.dll
           path: Card-Game-Simulator/Assets/Plugins
       - name: Download cgs.json
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: cgs.json
           path: Card-Game-Simulator/docs/schema
       - name: Raise PR to Card-Game-Simulator
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.CGS_PAT }}
           path: Card-Game-Simulator
@@ -102,7 +102,7 @@ jobs:
           title: FinolDigital.Cgs.Json ${{ needs.build.outputs.version }}
 #    - name: Raise PR for schema
 #      if: github.event.action == 'published'
-#      uses: peter-evans/create-pull-request@v7
+#      uses: peter-evans/create-pull-request@v8
 #      with:
 #        token: ${{ secrets.CGS_PAT }}
 #        path: schema
