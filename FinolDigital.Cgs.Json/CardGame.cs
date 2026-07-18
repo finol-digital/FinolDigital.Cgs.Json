@@ -197,6 +197,10 @@ namespace FinolDigital.Cgs.Json
         public string CardImageUrl { get; set; } = "";
 
         [JsonProperty]
+        [Description("cardImageUrlOverrides is a map where the key is the *Card:Id* and the value is the parameterized template url for that Card, overriding <cardImageUrl>.")]
+        public Dictionary<string, string> CardImageUrlOverrides { get; set; } = new Dictionary<string, string>();
+
+        [JsonProperty]
         [Description(
             "When defining a Card in AllCards.json or AllSets.json, you can have the *Card:Name* of the back face mapped to the field defined by cardNameBackIdentifier. Most custom games will likely want to keep the default cardNameBackIdentifier.")]
         public string CardNameBackIdentifier { get; set; } = "";
@@ -358,6 +362,12 @@ namespace FinolDigital.Cgs.Json
         [Description(
             "Each deck loaded during a game will be loaded to its corresponding position in gamePlayDeckPositions. The first deck loaded will go to the first position, second to second, etc.")]
         public List<Float2> GamePlayDeckPositions { get; set; } = new List<Float2>();
+
+        [JsonProperty]
+        [Description(
+            "Players will be oriented around the play area by rotating (in degrees) according to the values in gamePlayPlayerRotations. The first value corresponds to the first player, the second to the second player, etc.")]
+        [DefaultValue(new[] { 0f, 180f, 90f, 270f })]
+        public List<float> GamePlayPlayerRotations { get; set; } = new List<float> { 0, 180, 90, 270 };
 
         [JsonProperty]
         [Description("gamePlayZones will appear in the Play Area in Play Mode.")]

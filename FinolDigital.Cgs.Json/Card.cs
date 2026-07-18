@@ -27,6 +27,8 @@ namespace FinolDigital.Cgs.Json
                     return url;
                 // NOTE: cardImageUrl uses this custom implementation of uri-template to allow for more versatility
                 url = cardImageUrl;
+                if (SourceGame.CardImageUrlOverrides.TryGetValue(Id, out var overrideUrl))
+                    url = overrideUrl;
                 var id = Id;
                 if (!IsBackFaceCard && !string.IsNullOrEmpty(BackFaceId) && id.EndsWith("." + BackFaceId))
                     id = id[..id.LastIndexOf('.')];
