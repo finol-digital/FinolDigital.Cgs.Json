@@ -1,0 +1,31 @@
+{
+  "name": "Element Cards",
+  "allCardsUrl": "AllCards.json",
+  "cardImageUrl": "https://example.invalid/cards/{cardId}.png",
+  "cardProperties": [
+    { "name": "rules", "type": "string", "display": "Rules", "displayEmpty": "No rules" },
+    { "name": "element", "type": "stringEnum", "display": "Element" }
+  ],
+  "enums": [
+    { "property": "element", "values": { "fire": "Fire", "water": "Water" } }
+  ],
+  "deckUrls": [
+    { "name": "Starter", "url": "https://example.invalid/decks/starter.txt" }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": {
+      "es": { "url": "locales/es.json" },
+      "es-MX": { "inline": { "cards": { "001": { "name": "Flama" } } } },
+      "ja": {
+        "inline": {
+          "game": { "name": "エレメントカード" },
+          "cards": { "001": { "name": "炎", "properties": { "rules": "カードを1枚引く。" } } },
+          "decks": { "Starter": { "name": "スターターデッキ" } },
+          "properties": { "rules": { "display": "効果" }, "element": { "display": "属性" } },
+          "enums": { "element": { "fire": "火", "water": "水" } }
+        }
+      }
+    }
+  }
+}

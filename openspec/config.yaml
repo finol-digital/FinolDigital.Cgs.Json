@@ -1,0 +1,7 @@
+schema: spec-driven
+
+context: |
+  Existing game definitions and canonical identifiers must remain backwards compatible.
+  This repository owns the game-data contract; Unity UI, loading, and multiplayer
+  integrations live in the separate Card-Game-Simulator repository. Distinguish
+  library work from required downstream integration in every proposal.

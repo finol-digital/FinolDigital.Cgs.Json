@@ -1,0 +1,4 @@
+[
+  { "id": "001", "name": "Flame", "set": "BASE", "rules": "Draw one card.", "element": "fire" },
+  { "id": "002", "name": "Wave", "set": "BASE", "rules": "", "element": "water" }
+]
