@@ -1,4 +1,5 @@
 [
-  { "id": "001", "name": "Flame", "set": "BASE", "rules": "Draw one card.", "element": "fire" },
-  { "id": "002", "name": "Wave", "set": "BASE", "rules": "", "element": "water" }
+  { "id": "001", "name": "Flame", "set": "BASE", "rules": "Draw one card.", "element": "fire", "ready": "yes" },
+  { "id": "002", "name": "Wave", "set": "BASE", "rules": "", "element": "water", "ready": "no" },
+  { "id": "003", "name": "Flame", "set": "SECOND", "rules": "Draw one card.", "element": "fire", "ready": "1" }
 ]
