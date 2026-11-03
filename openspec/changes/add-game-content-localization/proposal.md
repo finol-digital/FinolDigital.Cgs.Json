@@ -2,7 +2,7 @@
 
 ## Why
 
-CGS can now change its interface language, but game-authored names, rules text, property labels, and enum labels remain in the author's language. Players need the same language selection to apply to game content without changing the identity or behavior of existing games, cards, decks, and saved sessions.
+CGS can now change its interface language, but game-authored names, rules text, property labels, and enum labels remain in the author's language. Players need the same language selection to apply to game content without changing the identity or behavior of existing games, cards, decks, and saved deck files.
 
 ## What Changes
 
@@ -29,6 +29,8 @@ None. This repository has no existing OpenSpec capabilities. The separate CGS `l
 
 - **This repository:** additive models on `CardGame`, locale/catalog DTOs and a Unity-independent resolver; generated `schema/cgs.json` and a new `schema/GameLocalization.json`; authoring examples, README guidance, and focused compatibility tests. Existing `AllCards.json`, `AllDecks.json`, and `AllSets.json` data shapes remain valid.
 - **Card-Game-Simulator repository:** package adoption, persisted download origins and portable caches, authored-deck provenance sidecars, optional presentation-metadata negotiation, canonical-to-display bindings across all game-content UI, and integration tests. The schema update alone cannot deliver the user-facing feature.
+- **cgs-games repository:** expose the server-validated final upstream document URL through a CORS-readable proxy response header for WebGL relative resources.
+- **Session persistence:** CGS has no full-session save/load feature. This change does not add one; optional session provenance sidecars are conditional on a future feature. Deck and multiplayer provenance remain in scope.
 - **Authors:** opt-in translations, with no changes required to existing source-language data or external card APIs. User-authored deck names, chat, and other arbitrary user input are preserved.
 - **Compatibility boundary:** old definitions work in new consumers. Old strict schemas can reject new optional fields, and old CGS editors can discard localization metadata when saving. Existing gameplay protocol contracts stay unchanged; mixed-capability sessions fall back to canonical shared-stack names where provenance is unavailable. This does not promise connectivity between previously incompatible CGS versions.
 

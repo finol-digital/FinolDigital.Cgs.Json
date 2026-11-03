@@ -54,3 +54,9 @@ You can create your own json and [validate](https://www.jsonschemavalidator.net/
 The default examples can be found in the [CGS GitHub Repository](https://github.com/finol-digital/Card-Game-Simulator/tree/develop/docs/games).
 
 Further examples can be found in the [CGS Google Drive folder](https://drive.google.com/open?id=1kVms-_CXRw1e4Ob18fRkS84MN_cxQGF5).
+
+## Authored translations
+
+See [game-content localization](docs/localization.md) for the optional catalog format,
+fallback rules, validation, and compatibility boundaries. CGS UI support requires
+the separate consumer integration tracked in the OpenSpec change.

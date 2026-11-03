@@ -1,0 +1,13 @@
+{
+  "name": "Element Cards",
+  "cardIdIdentifier": "code",
+  "cardNameIdentifier": "title",
+  "cardImageUrl": "https://example.invalid/{cardId}/{cardName}/{rules}.png",
+  "cardProperties": [
+    {
+      "name": "rules",
+      "type": "string",
+      "display": "Text"
+    }
+  ]
+}

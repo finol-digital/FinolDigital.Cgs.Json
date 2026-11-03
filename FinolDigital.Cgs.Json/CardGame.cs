@@ -30,6 +30,11 @@ namespace FinolDigital.Cgs.Json
             "The name of the custom card game as it appears to the user. This name is required for the *Game:Id*.")]
         public string Name { get; set; }
 
+        [JsonProperty("localization", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(GameLocalizationConverter))]
+        [Description("Optional authored game-content translations; canonical game data remains unchanged.")]
+        public GameLocalization? Localization { get; set; }
+
         [JsonProperty]
         [Description(
             "From allCardsUrl, CGS downloads the json that contains the Card data for the game. If CGS is able to successfully download this file, it will save it as AllCards.json.")]
