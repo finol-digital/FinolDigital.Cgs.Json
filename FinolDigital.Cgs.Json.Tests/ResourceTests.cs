@@ -36,10 +36,20 @@ public class ResourceTests
     public void InvalidReferencesAreUnavailable(string reference) =>
         Assert.Null(LocalizationOrigin.Resolve(reference,LocalizationOrigin.Remote(new Uri("https://example.invalid/cgs.json"))));
 
-    [Fact]
-    public void PackageResolutionConfinesDecodedPathsAndAncestorSymlinks()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void PackageResolutionConfinesDecodedPathsAndAncestorSymlinks(bool linkedTemp)
     {
-        var temp=Path.Combine(Path.GetTempPath(),Guid.NewGuid().ToString("N"));
+        var container=Path.Combine(Path.GetTempPath(),Guid.NewGuid().ToString("N"));
+        var temp=Path.Combine(container,"physical");
+        Directory.CreateDirectory(temp);
+        if(linkedTemp)
+        {
+            var link=Path.Combine(container,"logical");
+            Directory.CreateSymbolicLink(link,temp);
+            temp=link;
+        }
         var root=Path.Combine(temp,"game");
         var locales=Path.Combine(root,"locales");
         Directory.CreateDirectory(locales);
@@ -52,17 +62,17 @@ public class ResourceTests
         try
         {
             var origin=LocalizationOrigin.Bundled(root,Path.Combine(locales,"es.json"),PhysicalPath);
-            Assert.Equal(Path.Combine(root,"card.png"),LocalizationOrigin.Resolve("../card.png",origin)!.LocalPath);
+            Assert.Equal(PhysicalPath(Path.Combine(root,"card.png")),LocalizationOrigin.Resolve("../card.png",origin)!.LocalPath);
             foreach(var name in specialNames)
-                Assert.Equal(Path.Combine(root,name),LocalizationOrigin.Resolve("../"+Uri.EscapeDataString(name),origin)!.LocalPath);
+                Assert.Equal(PhysicalPath(Path.Combine(root,name)),LocalizationOrigin.Resolve("../"+Uri.EscapeDataString(name),origin)!.LocalPath);
             foreach(var path in new[] {"../../outside.png","%2e%2e/%2e%2e/outside.png","../escape/outside.png","%2fetc/passwd","..%5c..%5coutside.png","missing.png"})
                 Assert.Null(LocalizationOrigin.Resolve(path,origin));
             var relocated=Path.Combine(temp,"moved");
             Directory.Move(root,relocated);
             var moved=LocalizationOrigin.Bundled(relocated,Path.Combine(relocated,"locales","es.json"),PhysicalPath);
-            Assert.Equal(Path.Combine(relocated,"card.png"),LocalizationOrigin.Resolve("../card.png",moved)!.LocalPath);
+            Assert.Equal(PhysicalPath(Path.Combine(relocated,"card.png")),LocalizationOrigin.Resolve("../card.png",moved)!.LocalPath);
         }
-        finally { Directory.Delete(temp,true); }
+        finally { Directory.Delete(container,true); }
     }
 
     // Consumer adapter used only by tests; resolves every ancestor, not just the final file.

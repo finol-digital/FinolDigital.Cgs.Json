@@ -154,7 +154,6 @@ namespace FinolDigital.Cgs.Json
     public sealed class GameLocalizationConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType) => objectType == typeof(GameLocalization);
-        public override bool CanWrite => false;
         public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null) return null;
@@ -169,12 +168,30 @@ namespace FinolDigital.Cgs.Json
                 writer.WriteToken(reader);
             }
             finally { reader.DateParseHandling = dateHandling; }
-            var result = LocalizationJson.ReadManifest(text.ToString());
+            var authoredJson = text.ToString();
+            var result = LocalizationJson.ReadManifest(authoredJson);
             var value = result.Value ?? new GameLocalization();
             value.Diagnostics = result.Diagnostics;
             value.IsUsable = result.Value != null;
+            value.AuthoredJson = authoredJson;
+            value.ReadState = ModelState(value);
             return value;
         }
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) => throw new NotSupportedException();
+
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        {
+            if (value == null) { writer.WriteNull(); return; }
+            var manifest = (GameLocalization)value;
+            var current = ModelState(manifest);
+            if (manifest.AuthoredJson != null && JToken.DeepEquals(current, manifest.ReadState))
+                // Replay the captured token stream, including unknown/invalid data and duplicate names.
+                writer.WriteRawValue(manifest.AuthoredJson);
+            else
+                current.WriteTo(writer);
+        }
+
+        // Use the declared JSON contract independently of caller defaults or this converter being
+        // registered globally. Runtime diagnostics and retained source data are not model edits.
+        private static JToken ModelState(GameLocalization value) => JToken.FromObject(value, new JsonSerializer());
     }
 }

@@ -147,6 +147,11 @@ safe converter so invalid optional metadata does not prevent base-game parsing;
 inspect its `IsUsable` and `Diagnostics`. Do not use ordinary catalog deserialization
 as the validation boundary: Newtonsoft may otherwise coerce non-string values.
 Unknown targets never create entities; missing translations fall back to base data.
+When a `CardGame` is serialized without changes to its localization model, its
+authored localization JSON is retained, including unknown members and invalid
+values. Editing the localization model writes the edited model instead; replacing
+or clearing `Localization` also takes effect. This preservation applies to the
+`CardGame.Localization` converter, not the cleaned `ReadManifest` result.
 
 Older tolerant readers can use the base content, but old strict schemas reject
 `localization`. **Old CGS editors may silently discard localization when saving.**

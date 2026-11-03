@@ -3,6 +3,7 @@ namespace FinolDigital.Cgs.Json
     using System;
     using System.Collections.Generic;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
 
     /// <summary>Canonical catalog keys must never follow a serializer's property casing policy.</summary>
@@ -15,6 +16,8 @@ namespace FinolDigital.Cgs.Json
     [JsonObject(MemberSerialization.OptIn)]
     public sealed class GameLocalization
     {
+        [JsonIgnore] internal string? AuthoredJson { get; set; }
+        [JsonIgnore] internal JToken? ReadState { get; set; }
         [JsonIgnore] public bool IsUsable { get; internal set; } = true;
         [JsonIgnore] public IReadOnlyList<LocalizationDiagnostic> Diagnostics { get; internal set; } = Array.Empty<LocalizationDiagnostic>();
         [JsonProperty("defaultLocale")] public string DefaultLocale { get; set; } = "";

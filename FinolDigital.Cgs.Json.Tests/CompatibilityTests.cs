@@ -84,6 +84,8 @@ public class CompatibilityTests
           "cards":{"01DE001":{"properties":{"stats.text":"traducido"}}}
         }}}}
         """).Value;
+        var spanishContext=new LocalizationContext(new LocalizationTargets(game,cards,authoredDeckNames:new[] {"Starter"}),"es");
+        Assert.Equal("Ash",spanishContext.CardName(first));
         foreach(var locale in new[] {"es","ja","en","es-MX"})
         {
             var context=new LocalizationContext(new LocalizationTargets(game,cards,authoredDeckNames:new[] {"Starter"}),locale);

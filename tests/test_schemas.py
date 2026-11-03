@@ -9,7 +9,7 @@ from jsonschema import Draft4Validator, FormatChecker
 ROOT = Path(__file__).resolve().parents[1]
 
 def read(path):
-    return json.loads((ROOT / path).read_text())
+    return json.loads((ROOT / path).read_text(encoding="utf-8"))
 
 class Schemas(unittest.TestCase):
     @classmethod
@@ -60,7 +60,7 @@ class Schemas(unittest.TestCase):
         self.assertFalse(self.catalog.is_valid({'properties': {'ready': {'booleanValues': {'other':'x'}}}}))
 
     def test_documented_json(self):
-        for example in re.findall(r'```json\n(.*?)\n```', (ROOT / 'docs/localization.md').read_text(), re.S):
+        for example in re.findall(r'```json\n(.*?)\n```', (ROOT / 'docs/localization.md').read_text(encoding="utf-8"), re.S):
             self.game.validate(json.loads(example))
 
     def test_base_language_fixtures(self):
