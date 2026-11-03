@@ -187,7 +187,8 @@ namespace FinolDigital.Cgs.Json
                 // Replay the captured token stream, including unknown/invalid data and duplicate names.
                 writer.WriteRawValue(manifest.AuthoredJson);
             else
-                current.WriteTo(writer);
+                // Unity's bundled Newtonsoft version exposes the converters overload.
+                current.WriteTo(writer, Array.Empty<JsonConverter>());
         }
 
         // Use the declared JSON contract independently of caller defaults or this converter being
