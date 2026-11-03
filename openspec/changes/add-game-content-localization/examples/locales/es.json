@@ -1,0 +1,20 @@
+{
+  "game": { "name": "Cartas elementales" },
+  "cardNames": { "Flame": "Llama" },
+  "cards": {
+    "001": { "properties": { "rules": "Roba una carta." } },
+    "002": { "name": "Ola" }
+  },
+  "sets": { "BASE": { "name": "Básico" } },
+  "decks": { "Starter": { "name": "Mazo inicial" } },
+  "properties": {
+    "rules": { "display": "Reglas", "displayEmpty": "Sin reglas" },
+    "element": { "display": "Elemento" },
+    "ready": { "display": "Listo", "booleanValues": { "true": "Sí", "false": "No" } }
+  },
+  "enums": { "element": { "fire": "Fuego", "water": "Agua" } },
+  "assets": {
+    "cardImages": { "001": "images/001.png" },
+    "rulesUrl": "https://example.invalid/rules/es"
+  }
+}
