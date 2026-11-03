@@ -61,6 +61,25 @@ External catalog caches SHALL be scoped to canonical game identity, locale, and 
 - **THEN** its completion cannot replace the current presentation
 - **AND** changing a manifest's source prevents unrelated old-source cache data from being reused
 
+### Requirement: Cache publication preserves newer successful results
+For each external catalog/image cache key, successful results SHALL be ordered by request initiation. Once a later request publishes usable data, an earlier completion SHALL NOT replace any part of that persisted entry. Publication SHALL atomically check ordering and install data/metadata. Failed requests SHALL retain last-good data. Ordering SHALL survive locale changes and same-source manifest reloads, and replaced cache stores SHALL reject old in-flight writes.
+
+#### Scenario: Older response arrives after a newer refresh
+- **GIVEN** request A starts before request B for the same game, locale, and source key, across a language switch or same-URI manifest reload
+- **WHEN** B publishes usable content and A completes afterward
+- **THEN** A changes neither the persisted payload nor its origin, mappings, validation metadata, or freshness timestamps
+- **AND** subsequent offline selection, restart, and package export retain B's content for both catalogs and localized images
+
+#### Scenario: Failed refresh preserves usable content
+- **WHEN** a newer request fails, is cancelled, or returns malformed content
+- **THEN** it neither erases usable cached content nor advances the successful-publication order
+- **AND** an older valid completion can publish if no later success has been published, without bypassing the separate display-generation guard
+
+#### Scenario: Cache replacement and independent keys
+- **WHEN** a cache is replaced or imported while a request against its previous store is pending
+- **THEN** that request cannot write into the replacement store
+- **AND** concurrent requests for different locale/source/asset keys do not suppress one another's valid cache publications
+
 ### Requirement: Manifest replacement invalidates presentation bindings
 Every successful manifest reload SHALL replace localization state and advance its binding generation, even at an unchanged URL. Changed inline content SHALL be visible immediately. Missing/null localization SHALL disable localization immediately; old values SHALL NOT survive an in-place reload. A failed manifest load SHALL preserve the last successfully installed state.
 
