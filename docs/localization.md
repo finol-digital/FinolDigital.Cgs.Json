@@ -25,8 +25,8 @@ publishing the library alone does not deliver the UI feature.
 ```
 
 `defaultLocale` describes the existing authored language and is required when the
-manifest is present. `locales` may be absent or empty. Tags use [BCP 47](https://www.rfc-editor.org/rfc/rfc5646);
-case-insensitively duplicate keys are invalid. Each source must have exactly one
+manifest is present. `locales` may be absent or empty. Tags use [BCP 47](https://www.rfc-editor.org/rfc/rfc5646).
+Locale keys that collide under case-insensitive comparison are invalid. Each source must have exactly one
 nonempty `url` or an `inline` object. Neither English nor a source-language catalog
 is required. Empty catalogs and empty translation strings are valid. Null or
 non-string translations are invalid, not empty strings.
