@@ -45,7 +45,7 @@ namespace FinolDigital.Cgs.Json
                 var path = Uri.UnescapeDataString(separator < 0 ? reference : reference.Substring(0, separator));
                 // Reject decoded rooted paths and platform-dependent separators too.
                 if (path.StartsWith("/") || path.Contains("\\") || path.Contains(":") || Path.IsPathRooted(path)) return null;
-                var target = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(document)!, path));
+                var target = path.Length == 0 ? document : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(document)!, path));
                 if (!Inside(root, target)) return null;
                 var physical = origin._physicalPath(target);
                 if (physical == null || !Inside(root, physical)) return null;

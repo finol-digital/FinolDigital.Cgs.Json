@@ -59,7 +59,7 @@ void ConstrainLocalization(JObject root)
         manifest["required"] = new JArray("defaultLocale");
     // URI references use ASCII (percent-encode international paths), HTTP(S) or
     // relative paths only. Filesystem roots and other schemes are never resources.
-    const string resourcePattern = @"^(?:[Hh][Tt][Tt][Pp][Ss]?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:|/)))[^\s\\{}\u007F-\uFFFF]+$";
+    const string resourcePattern = @"^(?:[Hh][Tt][Tt][Pp][Ss]?://(?=[^/?#])|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:|/)))(?!.*[\\{}])[!-~]+(?![\s\S])";
     if (definitions?["LocalizationSource"] is JObject source)
     {
         source["oneOf"] = new JArray(

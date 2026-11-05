@@ -124,6 +124,9 @@ namespace FinolDigital.Cgs.Json
             var missing = new HashSet<string>(_leaves.Keys.Where(k => !valid.Contains(k)), StringComparer.Ordinal);
             foreach (var card in Cards.Values)
                 if (valid.Contains(P("cardNames", card.Name))) missing.Remove(P("cards", card.Id, "name"));
+            foreach (var group in Cards.Values.GroupBy(card => card.Name, StringComparer.Ordinal))
+                if (group.All(card => valid.Contains(P("cards", card.Id, "name"))))
+                    missing.Remove(P("cardNames", group.Key));
             return new LocalizationCoverage(_leaves.Count, _leaves.Keys.Where(missing.Contains).ToList(), translated.Keys.Where(k => !Contains(k)).ToList());
         }
     }

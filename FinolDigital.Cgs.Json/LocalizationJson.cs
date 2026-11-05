@@ -64,8 +64,13 @@ namespace FinolDigital.Cgs.Json
         {
             if (string.IsNullOrEmpty(value) || value!.Any(c => char.IsWhiteSpace(c) || c > 127) || value.Contains("\\") ||
                 value.StartsWith("/") || value.Contains("{") || value.Contains("}")) return false;
-            if (!Uri.IsWellFormedUriString(value, UriKind.RelativeOrAbsolute) || !Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri)) return false;
-            return !uri.IsAbsoluteUri || uri.Scheme == "http" || uri.Scheme == "https";
+            if (!Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri)) return false;
+            if (uri.IsAbsoluteUri)
+                return (uri.Scheme == "http" || uri.Scheme == "https") && uri.IsWellFormedOriginalString() && !string.IsNullOrEmpty(uri.Host);
+            // CoreCLR rejects fragments in its relative-only well-formedness check.
+            // Validate the same text in an HTTP path context; this is syntax validation
+            // only and never supplies a resource origin or starts a request.
+            return Uri.IsWellFormedUriString("https://localization.invalid/" + value, UriKind.Absolute);
         }
 
         private static LocalizationReadResult<T> Read<T>(string json) where T : class
@@ -73,9 +78,19 @@ namespace FinolDigital.Cgs.Json
             var diagnostics = new List<LocalizationDiagnostic>();
             try
             {
+                var quarantined = new HashSet<string>(StringComparer.Ordinal);
+                var manifest = typeof(T) == typeof(GameLocalization);
+                if (manifest && !ValidateDuplicates(json, diagnostics, quarantined))
+                    return new LocalizationReadResult<T>(null, diagnostics);
                 using var text = new StringReader(json);
                 using var reader = new JsonTextReader(text) { DateParseHandling = DateParseHandling.None };
-                var token = JToken.Load(reader, new JsonLoadSettings { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error });
+                var token = JToken.Load(reader, new JsonLoadSettings
+                {
+                    DuplicatePropertyNameHandling = manifest ? DuplicatePropertyNameHandling.Replace : DuplicatePropertyNameHandling.Error
+                });
+                if (token is JObject root && root["locales"] is JObject locales)
+                    foreach (var locale in quarantined)
+                        if (locales[locale] is JObject source) source["inline"] = new JObject();
                 while (reader.Read())
                     if (reader.TokenType != JsonToken.Comment) throw new JsonReaderException("Unexpected content after localization document.");
                 if (typeof(T) == typeof(GameLocalization) && token is JObject manifestObject && manifestObject["locales"] is JObject sources)
@@ -93,6 +108,67 @@ namespace FinolDigital.Cgs.Json
             }
         }
 
+        // JToken.Load loses duplicate keys in replacement mode. Inspect the token stream
+        // first, retaining exact pointer segments so dotted/slashed names cannot change
+        // which inline catalog owns an error. Duplicates outside a catalog reject the manifest.
+        private static bool ValidateDuplicates(string json, List<LocalizationDiagnostic> diagnostics, HashSet<string> quarantined)
+        {
+            using var text = new StringReader(json);
+            using var reader = new JsonTextReader(text) { DateParseHandling = DateParseHandling.None };
+            if (!ReadContent(reader)) throw new JsonReaderException("Empty localization document.");
+            var usable = true;
+            ScanDuplicates(reader, new List<string>(), diagnostics, quarantined, ref usable);
+            if (ReadContent(reader)) throw new JsonReaderException("Unexpected content after localization document.");
+            return usable;
+        }
+
+        private static bool ReadContent(JsonReader reader)
+        {
+            while (reader.Read())
+                if (reader.TokenType != JsonToken.Comment) return true;
+            return false;
+        }
+
+        private static void ScanDuplicates(JsonReader reader, List<string> path,
+            List<LocalizationDiagnostic> diagnostics, HashSet<string> quarantined, ref bool usable)
+        {
+            if (reader.TokenType == JsonToken.StartObject)
+            {
+                var names = new HashSet<string>(StringComparer.Ordinal);
+                while (ReadContent(reader) && reader.TokenType != JsonToken.EndObject)
+                {
+                    if (reader.TokenType != JsonToken.PropertyName) throw new JsonReaderException("Expected a JSON member.");
+                    var name = (string)reader.Value!;
+                    path.Add(name);
+                    if (!names.Add(name))
+                    {
+                        var inline = path.Count > 3 && path[0] == "locales" && path[2] == "inline";
+                        diagnostics.Add(new LocalizationDiagnostic("json", Pointer(path.ToArray()),
+                            inline ? "Duplicate JSON member; inline catalog unavailable." : "Duplicate JSON member; manifest unavailable."));
+                        if (inline) quarantined.Add(path[1]);
+                        else usable = false;
+                    }
+                    if (!ReadContent(reader)) throw new JsonReaderException("Missing JSON member value.");
+                    ScanDuplicates(reader, path, diagnostics, quarantined, ref usable);
+                    path.RemoveAt(path.Count - 1);
+                }
+                if (reader.TokenType != JsonToken.EndObject) throw new JsonReaderException("Unclosed JSON object.");
+            }
+            else if (reader.TokenType == JsonToken.StartArray)
+            {
+                var index = 0;
+                while (ReadContent(reader) && reader.TokenType != JsonToken.EndArray)
+                {
+                    path.Add((index++).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                    ScanDuplicates(reader, path, diagnostics, quarantined, ref usable);
+                    path.RemoveAt(path.Count - 1);
+                }
+                if (reader.TokenType != JsonToken.EndArray) throw new JsonReaderException("Unclosed JSON array.");
+            }
+            else if (reader.TokenType == JsonToken.StartConstructor)
+                throw new JsonReaderException("JSON constructors are not supported.");
+        }
+
         private static JToken? Clean(Type type, JToken token, string path, List<LocalizationDiagnostic> diagnostics, ref bool structureValid)
         {
             if (type == typeof(string))
@@ -103,7 +179,7 @@ namespace FinolDigital.Cgs.Json
             }
             if (!(token is JObject obj))
             {
-                diagnostics.Add(new LocalizationDiagnostic("structure", path, "Expected an object; document unavailable."));
+                diagnostics.Add(new LocalizationDiagnostic("structure", path, "Expected an object; containing catalog or manifest unavailable."));
                 structureValid = false;
                 return null;
             }

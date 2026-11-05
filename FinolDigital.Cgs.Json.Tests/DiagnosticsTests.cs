@@ -40,6 +40,46 @@ public class DiagnosticsTests
     }
 
     [Theory]
+    [InlineData("{\"game\":{\"name\":\"a\",\"name\":\"b\"}}", "/locales/fr/inline/game/name")]
+    [InlineData("{\"cards\":{\"x/y~z\":{\"name\":\"a\"},\"x/y~z\":{\"name\":\"b\"}}}", "/locales/fr/inline/cards/x~1y~0z")]
+    [InlineData("{\"unknown\":[{\"x\":1,\"x\":2}]}", "/locales/fr/inline/unknown/0/x")]
+    public void DuplicateInlineMembersQuarantineOnlyTheirCatalogAndPreserveSource(string broken, string pointer)
+    {
+        var json = "{\"name\":\"Base\",\"localization\":{\"defaultLocale\":\"es\",\"locales\":{\"es\":{\"inline\":{\"game\":{\"name\":\"Juego\"}}},\"fr\":{\"inline\":" + broken + "}}}}";
+        var game = JsonConvert.DeserializeObject<CardGame>(json)!;
+        Assert.True(game.Localization!.IsUsable);
+        Assert.Contains(game.Localization.Diagnostics, d => d.Code == "json" && d.Path == pointer);
+        var targets = new LocalizationTargets(game, Array.Empty<Card>());
+        Assert.Equal("Juego", new LocalizationContext(targets, "es").GameName);
+        Assert.Equal("Juego", new LocalizationContext(targets, "fr").GameName);
+        Assert.Contains(broken, JsonConvert.SerializeObject(game));
+    }
+
+    [Theory]
+    [InlineData("{\"defaultLocale\":\"en\",\"defaultLocale\":\"es\"}")]
+    [InlineData("{\"defaultLocale\":\"en\",\"locales\":{\"fr\":{\"inline\":{},\"inline\":{}}}}")]
+    [InlineData("{\"defaultLocale\":\"en\",\"locales\":{\"fr\":{\"inline\":{}},\"fr\":{\"inline\":{}}}}")]
+    public void DuplicateManifestOrSourceMembersStillRejectTheWholeManifest(string json)
+    {
+        var result = LocalizationJson.ReadManifest(json);
+        Assert.Null(result.Value);
+        Assert.Contains(result.Diagnostics, d => d.Code == "json");
+    }
+
+    [Theory]
+    [InlineData("null")]
+    [InlineData("42")]
+    [InlineData("[]")]
+    public void NonObjectInlineCatalogsFallThroughToValidDefaultCatalog(string broken)
+    {
+        var result = LocalizationJson.ReadManifest("{\"defaultLocale\":\"es\",\"locales\":{\"es\":{\"inline\":{\"game\":{\"name\":\"Juego\"}}},\"fr\":{\"inline\":" + broken + "}}}");
+        Assert.NotNull(result.Value);
+        Assert.Contains(result.Diagnostics, d => d.Code == "structure");
+        var game = new CardGame("Base") { Localization = result.Value };
+        Assert.Equal("Juego", new LocalizationContext(new LocalizationTargets(game, Array.Empty<Card>()), "fr").GameName);
+    }
+
+    [Theory]
     [InlineData("42")]
     [InlineData("""{"defaultLocale":"bad_tag"}""")]
     [InlineData("""{"defaultLocale":"en","locales":{"es":{"inline":{}},"ES":{"inline":{}}}}""")]

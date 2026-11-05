@@ -3,6 +3,24 @@ namespace FinolDigital.Cgs.Json.Tests;
 public class InventoryTests
 {
     [Fact]
+    public void ExactTranslationsOfEveryPrintingCoverTheSharedNameTarget()
+    {
+        var game = new CardGame("Base");
+        var cards = new[] {
+            new Card(game,"1","Flame","S",new(),false),
+            new Card(game,"2","Flame","T",new(),false),
+            new Card(game,"3","Ash","S",new(),false)
+        };
+        var targets = new LocalizationTargets(game, cards);
+        var partial = LocalizationJson.ReadCatalog("""{"cards":{"1":{"name":"Llama"}}}""").Value!;
+        Assert.Contains("/cardNames/Flame", targets.Coverage(partial).Missing);
+        var complete = LocalizationJson.ReadCatalog("""{"cards":{"1":{"name":"Llama"},"2":{"name":""},"3":{"name":"Ceniza"}}}""").Value!;
+        var missing = targets.Coverage(complete).Missing;
+        Assert.DoesNotContain(missing, path => path.StartsWith("/cardNames/",StringComparison.Ordinal));
+        Assert.DoesNotContain(missing, path => path.StartsWith("/cards/",StringComparison.Ordinal) && path.EndsWith("/name",StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void ResolvedInventoryIncludesActualFaceAndNestedPathsAndReportsCoverage()
     {
         var (game,card,_)=PresentationTests.Create("""{"defaultLocale":"en"}""");

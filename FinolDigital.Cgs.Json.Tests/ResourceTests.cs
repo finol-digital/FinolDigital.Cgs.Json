@@ -26,6 +26,17 @@ public class ResourceTests
     }
 
     [Theory]
+    [InlineData("docs/rules.html#setup", "https://example.invalid/game/docs/rules.html#setup")]
+    [InlineData("#setup", "https://example.invalid/game/cgs.json#setup")]
+    [InlineData("rules.html?lang=es#setup", "https://example.invalid/game/rules.html?lang=es#setup")]
+    public void RelativeFragmentsResolveAgainstTheirContainingDocument(string reference, string expected)
+    {
+        var origin = LocalizationOrigin.Remote(new Uri("https://example.invalid/game/cgs.json"));
+        Assert.Equal(expected, LocalizationOrigin.Resolve(reference, origin)!.AbsoluteUri);
+        Assert.NotNull(LocalizationJson.ReadManifest("{\"defaultLocale\":\"en\",\"locales\":{\"es\":{\"url\":\"" + reference + "\"}}}").Value);
+    }
+
+    [Theory]
     [InlineData("locales/espa%C3%B1ol.json")]
     [InlineData("%E7%94%BB%E5%83%8F/001.png")]
     public void EncodedInternationalPathsResolveAgainstRecordedOrigin(string reference)
@@ -43,6 +54,11 @@ public class ResourceTests
     [InlineData("javascript:alert(1)")]
     [InlineData("//other.invalid/path")]
     [InlineData("bad path")]
+    [InlineData("a\n")]
+    [InlineData("http:///foo")]
+    [InlineData("https://?x")]
+    [InlineData("http://example.invalid:99999/x")]
+    [InlineData("a#one#two")]
     [InlineData("locales/español.json")]
     [InlineData("画像/001.png")]
     [InlineData("images/{cardName}.png")]
@@ -76,6 +92,12 @@ public class ResourceTests
         {
             var origin=LocalizationOrigin.Bundled(root,Path.Combine(locales,"es.json"),PhysicalPath);
             Assert.Equal(PhysicalPath(Path.Combine(root,"card.png")),LocalizationOrigin.Resolve("../card.png",origin)!.LocalPath);
+            var fragment = LocalizationOrigin.Resolve("../card.png#setup", origin)!;
+            Assert.Equal(PhysicalPath(Path.Combine(root,"card.png")), fragment.LocalPath);
+            Assert.Equal("#setup", fragment.Fragment);
+            var sameDocument = LocalizationOrigin.Resolve("#setup", origin)!;
+            Assert.Equal(PhysicalPath(Path.Combine(locales,"es.json")), sameDocument.LocalPath);
+            Assert.Equal("#setup", sameDocument.Fragment);
             foreach(var name in specialNames)
                 Assert.Equal(PhysicalPath(Path.Combine(root,name)),LocalizationOrigin.Resolve("../"+Uri.EscapeDataString(name),origin)!.LocalPath);
             foreach(var path in new[] {"../../outside.png","%2e%2e/%2e%2e/outside.png","../escape/outside.png","%2fetc/passwd","..%5c..%5coutside.png","missing.png"})

@@ -30,13 +30,20 @@ Locale keys that collide under case-insensitive comparison are invalid. Each sou
 nonempty `url` or an `inline` object. Neither English nor a source-language catalog
 is required. Empty catalogs and empty translation strings are valid. Null or
 non-string translations are invalid, not empty strings. An unusable inline catalog
-is ignored without disabling valid catalogs for other locales.
+is ignored without disabling valid catalogs for other locales, including duplicate
+members inside that catalog. Duplicate members elsewhere in the manifest make the
+manifest unusable. JSON Schema validators cannot detect duplicate members after a
+JSON parser has discarded them; use `LocalizationJson.ReadManifest` on the source
+text as well.
 
 Catalog and asset references must be HTTP(S) URLs or relative URI references;
 root-relative paths such as `/locales/es.json`, `file:` URLs, and backslashes are
 not allowed. Percent-encode spaces and non-ASCII characters in paths, for example
-`locales/espa%C3%B1ol.json` or `%E7%94%BB%E5%83%8F/001.png`. These rules apply to
-both schema validation and runtime loading.
+`locales/espa%C3%B1ol.json` or `%E7%94%BB%E5%83%8F/001.png`. Fragments are supported,
+including `docs/rules.html#setup` and `#setup` for the containing document.
+Use an active URI format checker with the schemas. Runtime URI parsing may reject
+additional invalid authorities or ports; schema validation alone does not guarantee
+that a reference can be loaded.
 
 Each leaf resolves through the chosen locale and its parents, then `defaultLocale`
 and its parents, then the exact legacy display. `es-MX` can fall back to `es`;
@@ -167,6 +174,11 @@ Removing/nulling localization on a successful reload disables bindings; CGS must
 stage and validate the new definition before publishing it and retain last-good
 state if loading fails. Existing saves, deck formats, and IDs require no migration.
 
+Unchanged localization models preserve authored metadata when serialized. Editing
+that model serializes its validated contents; unknown members and quarantined
+catalog data may then be discarded. Keep the original authoring document when
+making such edits.
+
 The [example game](../examples/localization/README.md)
 contains Spanish/Japanese names, properties, booleans, and artwork references.
 
@@ -182,7 +194,9 @@ JSON layout or generated ID suffix needs to be guessed. Rebuild this inventory
 when the canonical data changes. `Leaves` lists JSON-pointer addresses and base
 values; `Validate(catalog)` reports unknown/ineligible targets and
 `Coverage(catalog)` lists missing and unknown leaves. Coverage accounts for shared
-card-name translations. Diagnostics before all data loads are provisional.
+card-name translations in both directions: a shared name covers its printings,
+and exact names for every printing cover the optional shared-name target.
+Diagnostics before all data loads are provisional.
 
 Create a `LocalizationContext` for each locale and current manifest/catalog
 snapshot. It reads inline catalogs from `game.Localization`. Supply downloaded or
