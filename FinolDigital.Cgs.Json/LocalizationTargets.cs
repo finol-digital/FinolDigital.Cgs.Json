@@ -121,10 +121,10 @@ namespace FinolDigital.Cgs.Json
             var translated = LocalizationJson.Leaves(catalog);
             var valid = new HashSet<string>(translated.Keys.Where(Contains), StringComparer.Ordinal);
             foreach (var entry in translated.Where(p => p.Key.StartsWith("/assets/", StringComparison.Ordinal) && !LocalizationJson.IsResourceReference(p.Value))) valid.Remove(entry.Key);
-            var missing = _leaves.Keys.Where(k => !valid.Contains(k)).ToList();
+            var missing = new HashSet<string>(_leaves.Keys.Where(k => !valid.Contains(k)), StringComparer.Ordinal);
             foreach (var card in Cards.Values)
                 if (valid.Contains(P("cardNames", card.Name))) missing.Remove(P("cards", card.Id, "name"));
-            return new LocalizationCoverage(_leaves.Count, missing, translated.Keys.Where(k => !Contains(k)).ToList());
+            return new LocalizationCoverage(_leaves.Count, _leaves.Keys.Where(missing.Contains).ToList(), translated.Keys.Where(k => !Contains(k)).ToList());
         }
     }
 

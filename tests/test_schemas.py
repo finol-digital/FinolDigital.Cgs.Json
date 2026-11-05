@@ -42,9 +42,9 @@ class Schemas(unittest.TestCase):
         self.assertFalse(self.game.is_valid(base))
 
     def test_sources(self):
-        for source in ({'inline': {}}, {'url': 'locales/es.json'}, {'url': 'https://example.invalid/es.json'}):
+        for source in ({'inline': {}}, {'url': 'locales/es.json'}, {'url': 'locales/espa%C3%B1ol.json'}, {'url': 'https://example.invalid/es.json'}):
             self.game.validate({'name':'Game', 'localization':{'defaultLocale':'ja','locales':{'es':source}}})
-        for source in ({}, {'inline':{},'url':'es.json'}, {'inline':None}, {'url':''}, {'url':'bad url'}):
+        for source in ({}, {'inline':{},'url':'es.json'}, {'inline':None}, {'url':''}, {'url':'bad url'}, {'url':'/locales/es.json'}, {'url':'file:///tmp/es.json'}, {'url':'//host/es.json'}, {'url':'locales/español.json'}):
             self.assertFalse(self.game.is_valid({'name':'Game','localization':{'defaultLocale':'ja','locales':{'es':source}}}))
         self.assertFalse(self.game.is_valid({'name':'Game','localization':{}}))
         self.game.validate({'name':'Game','localization':{'defaultLocale':'ja'}})
@@ -54,7 +54,7 @@ class Schemas(unittest.TestCase):
         self.catalog.validate({'cards':{'AbC':{'name':'','properties':{'Rules':'text'}}},'properties':{'ready':{'booleanValues':{'true':'Sí'}}}})
         for value in (None, 42, False, [], {}):
             self.assertFalse(self.catalog.is_valid({'cards': {'AbC': {'name':value}}}))
-        for value in ('', 'bad path', 'https://example.invalid/bad path'):
+        for value in ('', 'bad path', 'https://example.invalid/bad path', '/images/card.png', 'file:///tmp/card.png', '画像/001.png'):
             self.assertFalse(self.catalog.is_valid({'assets': {'cardImages': {'AbC': value}}}))
         self.catalog.validate({'assets': {'cardImages': {'AbC': '../images/card.png'}}})
         self.assertFalse(self.catalog.is_valid({'properties': {'ready': {'booleanValues': {'other':'x'}}}}))

@@ -26,6 +26,19 @@ public class DiagnosticsTests
         Assert.Equal("Owner",game.Copyright);
     }
 
+    [Fact]
+    public void BrokenInlineCatalogDoesNotDisableSiblingLocalesOrLoseAuthoredData()
+    {
+        const string json = """{"name":"Base","localization":{"defaultLocale":"en","locales":{"es":{"inline":{"game":{"name":"Juego"}}},"fr":{"inline":{"cards":{"x":null}}}}}}""";
+        var game = JsonConvert.DeserializeObject<CardGame>(json)!;
+        Assert.True(game.Localization!.IsUsable);
+        Assert.Contains(game.Localization.Diagnostics, d => d.Code == "structure");
+        var context = new LocalizationContext(new LocalizationTargets(game, Array.Empty<Card>()), "es");
+        Assert.Equal("Juego", context.GameName);
+        Assert.Equal(Newtonsoft.Json.Linq.JToken.Parse(json)["localization"]!.ToString(),
+            Newtonsoft.Json.Linq.JToken.Parse(JsonConvert.SerializeObject(game))["localization"]!.ToString());
+    }
+
     [Theory]
     [InlineData("42")]
     [InlineData("""{"defaultLocale":"bad_tag"}""")]

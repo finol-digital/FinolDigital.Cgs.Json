@@ -57,6 +57,9 @@ void ConstrainLocalization(JObject root)
     }
     if (definitions?["GameLocalization"] is JObject manifest)
         manifest["required"] = new JArray("defaultLocale");
+    // URI references use ASCII (percent-encode international paths), HTTP(S) or
+    // relative paths only. Filesystem roots and other schemes are never resources.
+    const string resourcePattern = @"^(?:[Hh][Tt][Tt][Pp][Ss]?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:|/)))[^\s\\{}\u007F-\uFFFF]+$";
     if (definitions?["LocalizationSource"] is JObject source)
     {
         source["oneOf"] = new JArray(
@@ -65,6 +68,7 @@ void ConstrainLocalization(JObject root)
         var url = (JObject)source["properties"]!["url"]!;
         url["format"] = "uri-reference";
         url["minLength"] = 1;
+        url["pattern"] = resourcePattern;
     }
     if (definitions?["LocalizedAssets"] is JObject assets)
     {
@@ -81,6 +85,7 @@ void ConstrainLocalization(JObject root)
             }
             value["format"] = "uri-reference";
             value["minLength"] = 1;
+            value["pattern"] = resourcePattern;
         }
     }
 }

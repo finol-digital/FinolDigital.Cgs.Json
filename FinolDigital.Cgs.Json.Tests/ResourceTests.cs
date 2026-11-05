@@ -26,12 +26,25 @@ public class ResourceTests
     }
 
     [Theory]
+    [InlineData("locales/espa%C3%B1ol.json")]
+    [InlineData("%E7%94%BB%E5%83%8F/001.png")]
+    public void EncodedInternationalPathsResolveAgainstRecordedOrigin(string reference)
+    {
+        var origin = LocalizationOrigin.Remote(new Uri("https://example.invalid/game/cgs.json"));
+        Assert.Equal("https://example.invalid/game/" + reference,
+            LocalizationOrigin.Resolve(reference, origin)!.AbsoluteUri);
+        Assert.NotNull(LocalizationJson.ReadManifest("{\"defaultLocale\":\"en\",\"locales\":{\"es\":{\"url\":\"" + reference + "\"}}}").Value);
+    }
+
+    [Theory]
     [InlineData("file:///etc/passwd")]
     [InlineData("/etc/passwd")]
     [InlineData("C:\\secrets.txt")]
     [InlineData("javascript:alert(1)")]
     [InlineData("//other.invalid/path")]
     [InlineData("bad path")]
+    [InlineData("locales/español.json")]
+    [InlineData("画像/001.png")]
     [InlineData("images/{cardName}.png")]
     public void InvalidReferencesAreUnavailable(string reference) =>
         Assert.Null(LocalizationOrigin.Resolve(reference,LocalizationOrigin.Remote(new Uri("https://example.invalid/cgs.json"))));

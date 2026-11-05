@@ -62,7 +62,7 @@ namespace FinolDigital.Cgs.Json
 
         internal static bool IsResourceReference(string? value)
         {
-            if (string.IsNullOrEmpty(value) || value!.Any(char.IsWhiteSpace) || value.Contains("\\") ||
+            if (string.IsNullOrEmpty(value) || value!.Any(c => char.IsWhiteSpace(c) || c > 127) || value.Contains("\\") ||
                 value.StartsWith("/") || value.Contains("{") || value.Contains("}")) return false;
             if (!Uri.IsWellFormedUriString(value, UriKind.RelativeOrAbsolute) || !Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri)) return false;
             return !uri.IsAbsoluteUri || uri.Scheme == "http" || uri.Scheme == "https";
@@ -127,7 +127,17 @@ namespace FinolDigital.Cgs.Json
                         diagnostics.Add(new LocalizationDiagnostic("unknown-member", path + Pointer(p.Name), "Unknown catalog member ignored."));
                         continue;
                     }
-                    var clean = Clean(property.PropertyType, p.Value, path + Pointer(p.Name), diagnostics, ref structureValid);
+                    // An inline catalog is its own failure boundary, just like an external
+                    // catalog. Preserve the source as empty so other locales can still resolve.
+                    JToken? clean;
+                    if (property.PropertyType == typeof(LocalizationCatalog))
+                    {
+                        var catalogValid = true;
+                        clean = Clean(property.PropertyType, p.Value, path + Pointer(p.Name), diagnostics, ref catalogValid);
+                        if (!catalogValid) clean = new JObject();
+                    }
+                    else
+                        clean = Clean(property.PropertyType, p.Value, path + Pointer(p.Name), diagnostics, ref structureValid);
                     if (clean != null) result.Add(p.Name, clean);
                 }
             }

@@ -29,7 +29,14 @@ manifest is present. `locales` may be absent or empty. Tags use [BCP 47](https:/
 Locale keys that collide under case-insensitive comparison are invalid. Each source must have exactly one
 nonempty `url` or an `inline` object. Neither English nor a source-language catalog
 is required. Empty catalogs and empty translation strings are valid. Null or
-non-string translations are invalid, not empty strings.
+non-string translations are invalid, not empty strings. An unusable inline catalog
+is ignored without disabling valid catalogs for other locales.
+
+Catalog and asset references must be HTTP(S) URLs or relative URI references;
+root-relative paths such as `/locales/es.json`, `file:` URLs, and backslashes are
+not allowed. Percent-encode spaces and non-ASCII characters in paths, for example
+`locales/espa%C3%B1ol.json` or `%E7%94%BB%E5%83%8F/001.png`. These rules apply to
+both schema validation and runtime loading.
 
 Each leaf resolves through the chosen locale and its parents, then `defaultLocale`
 and its parents, then the exact legacy display. `es-MX` can fall back to `es`;

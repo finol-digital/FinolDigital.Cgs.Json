@@ -23,6 +23,8 @@ namespace FinolDigital.Cgs.Json
 
         /// <param name="physicalPath">Consumer-provided filesystem resolver: resolve every ancestor symlink,
         /// return the absolute physical path of an existing file/directory, or null if unavailable.
+        /// A consumer may instead keep a stable trusted-root alias and reject every link
+        /// below that root. Both strategies must prevent package paths escaping the root.
         /// This callback is mandatory because netstandard2.1 has no portable symlink resolution API.</param>
         public static LocalizationOrigin Bundled(string gameDirectory, string documentPath, Func<string, string?> physicalPath)
             => new LocalizationOrigin(null, Path.GetFullPath(gameDirectory), Path.GetFullPath(documentPath), physicalPath ?? throw new ArgumentNullException(nameof(physicalPath)));
