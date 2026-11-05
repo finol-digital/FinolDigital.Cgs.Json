@@ -169,8 +169,13 @@ Consumers SHALL negotiate an optional versioned presentation capability separate
 - **GIVEN** a consumer implements a session save/load feature (CGS currently does not, and this change does not add one)
 - **WHEN** a session is restored from a legacy save or a save with a mismatched provenance sidecar
 - **THEN** saved canonical names are preserved without inferred bindings
-- **AND** a matching optional sidecar can restore verified label references without altering the session format
 - **AND** session-sidecar implementation and verification apply only when that persistence feature exists; deck and live multiplayer provenance remain required independently
+
+#### Scenario: Future session persistence has matching provenance
+- **GIVEN** a consumer implements a session save/load feature (CGS currently does not, and this change does not add one)
+- **WHEN** a session is restored with a matching optional provenance sidecar
+- **THEN** the consumer can restore verified label references without altering the session format
+- **AND** this does not permit inferring bindings from a legacy save or a mismatched sidecar
 
 #### Scenario: Unlocalized games retain their network behavior
 - **WHEN** a game without localization is played between capable peers
