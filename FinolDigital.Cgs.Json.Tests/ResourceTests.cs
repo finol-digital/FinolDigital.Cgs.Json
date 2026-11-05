@@ -2,6 +2,44 @@ namespace FinolDigital.Cgs.Json.Tests;
 
 public class ResourceTests
 {
+    [Theory]
+    [InlineData("https:es.json")]
+    [InlineData("HTTPS:es.json")]
+    [InlineData("https:/es.json")]
+    [InlineData("https:?x")]
+    [InlineData("https:#x")]
+    [InlineData("http:es.json")]
+    [InlineData("1a:b")]
+    public void SchemeLikeRelativeReferencesAreRejectedWithoutThrowing(string reference)
+    {
+        var manifest = LocalizationJson.ReadManifest("{\"defaultLocale\":\"en\",\"locales\":{\"es\":{\"url\":\"" + reference + "\"}}}");
+        Assert.False(manifest.IsValid);
+        Assert.Contains(manifest.Diagnostics, d => d.Code == "manifest" && d.Path == "/locales/es/url");
+        var (_, _, targets) = PresentationTests.Create("{\"defaultLocale\":\"es\",\"locales\":{\"es\":{\"inline\":{\"assets\":{\"rulesUrl\":\"" + reference + "\"}}}}}");
+        foreach (var scheme in new[] { "http", "https" })
+        {
+            var origin = LocalizationOrigin.Remote(new Uri(scheme + "://cdn.example/g/cgs.json"));
+            Assert.Null(LocalizationOrigin.Resolve(reference, origin));
+            var context = new LocalizationContext(targets, "es", definitionOrigin: origin);
+            Assert.Empty(context.AssetCandidates("rulesUrl"));
+        }
+    }
+
+    [Theory]
+    [InlineData("docs/a:b.html", "docs/a:b.html")]
+    [InlineData("./a:b.html", "a:b.html")]
+    [InlineData("?url=https:foo", "cgs.json?url=https:foo")]
+    [InlineData("#section:one", "cgs.json#section:one")]
+    public void ColonsAfterTheFirstRelativeSegmentRemainValid(string reference, string suffix)
+    {
+        foreach (var scheme in new[] { "http", "https" })
+        {
+            var prefix = scheme + "://cdn.example/g/";
+            Assert.Equal(prefix + suffix, LocalizationOrigin.Resolve(reference,
+                LocalizationOrigin.Remote(new Uri(prefix + "cgs.json")))!.AbsoluteUri);
+        }
+    }
+
     [Fact]
     public void InlineAndExternalAssetsUseTheirOwnRecordedOrigin()
     {

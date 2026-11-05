@@ -32,9 +32,10 @@ namespace FinolDigital.Cgs.Json
         public static Uri? Resolve(string reference, LocalizationOrigin? origin)
         {
             if (!LocalizationJson.IsResourceReference(reference)) return null;
-            var parsed = new Uri(reference, UriKind.RelativeOrAbsolute);
+            if (!Uri.TryCreate(reference, UriKind.RelativeOrAbsolute, out var parsed)) return null;
             if (parsed.IsAbsoluteUri) return parsed;
-            if (origin?.RemoteUrl != null) return new Uri(origin.RemoteUrl, parsed);
+            if (origin?.RemoteUrl != null)
+                return Uri.TryCreate(origin.RemoteUrl, parsed, out var resolved) ? resolved : null;
             if (origin?._physicalPath == null || origin._gameDirectory == null || origin._documentPath == null) return null;
             try
             {

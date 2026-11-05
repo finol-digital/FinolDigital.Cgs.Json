@@ -41,6 +41,9 @@ root-relative paths such as `/locales/es.json`, `file:` URLs, and backslashes ar
 not allowed. Percent-encode spaces and non-ASCII characters in paths, for example
 `locales/espa%C3%B1ol.json` or `%E7%94%BB%E5%83%8F/001.png`. Fragments are supported,
 including `docs/rules.html#setup` and `#setup` for the containing document.
+Relative paths cannot contain a colon in their first segment: `https:es.json`
+is invalid; use a complete `https://host/path` URL or a relative path instead.
+Colons in later segments, queries, or fragments are allowed.
 Use an active URI format checker with the schemas. Runtime URI parsing may reject
 additional invalid authorities or ports; schema validation alone does not guarantee
 that a reference can be loaded.

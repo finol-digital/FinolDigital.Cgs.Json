@@ -49,6 +49,14 @@ class Schemas(unittest.TestCase):
         self.assertFalse(self.game.is_valid({'name':'Game','localization':{}}))
         self.game.validate({'name':'Game','localization':{'defaultLocale':'ja'}})
 
+    def test_scheme_like_relative_references(self):
+        for reference in ('https:es.json', 'HTTPS:es.json', 'https:/es.json', 'https:?x', 'https:#x', 'http:es.json', '1a:b'):
+            self.assertFalse(self.game.is_valid({'name':'Game','localization':{'defaultLocale':'en','locales':{'es':{'url':reference}}}}), reference)
+            self.assertFalse(self.catalog.is_valid({'assets':{'rulesUrl':reference}}), reference)
+        for reference in ('docs/a:b.html', './a:b.html', '?url=https:foo', '#section:one'):
+            self.game.validate({'name':'Game','localization':{'defaultLocale':'en','locales':{'es':{'url':reference}}}})
+            self.catalog.validate({'assets':{'rulesUrl':reference}})
+
     def test_catalog_leaf_types(self):
         self.catalog.validate({})
         self.catalog.validate({'cards':{'AbC':{'name':'','properties':{'Rules':'text'}}},'properties':{'ready':{'booleanValues':{'true':'Sí'}}}})

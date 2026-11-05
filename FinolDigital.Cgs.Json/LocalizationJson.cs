@@ -67,6 +67,11 @@ namespace FinolDigital.Cgs.Json
             if (!Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri)) return false;
             if (uri.IsAbsoluteUri)
                 return (uri.Scheme == "http" || uri.Scheme == "https") && uri.IsWellFormedOriginalString() && !string.IsNullOrEmpty(uri.Host);
+            // RFC 3986 path-noscheme forbids a colon in the first relative segment.
+            // Uri may classify malformed HTTP(S) references as relative nonetheless.
+            var colon = value.IndexOf(':');
+            var separator = value.IndexOfAny(new[] { '/', '?', '#' });
+            if (colon >= 0 && (separator < 0 || colon < separator)) return false;
             // CoreCLR rejects fragments in its relative-only well-formedness check.
             // Validate the same text in an HTTP path context; this is syntax validation
             // only and never supplies a resource origin or starts a request.
