@@ -286,9 +286,13 @@ games retain the absent-metadata fallback to canonical presentation. To disable
 this built-in fallback and the managed authored-deck choices, use
 `"localization": null`; an empty non-null manifest is not the same opt-out.
 
-When reading and saving through `CardGame`, authored null stays explicit and an
-absent member stays absent. Assigning `game.Localization = null` still removes
-the member. To write explicit null programmatically, assign null and then set
+When reading into a new `CardGame` and saving it, authored null stays explicit and
+an absent member stays absent. `JsonConvert.PopulateObject` retains the previous
+localization state when the JSON omits the member, including an earlier opt-out.
+For a complete manifest replacement, clear localization on the staged model before
+populating it; publish that model only after the load succeeds. Assigning
+`game.Localization = null` still removes the member. To write explicit null
+programmatically, assign null and then set
 `game.LocalizationSpecified = true`. Copy `LocalizationSpecified` together with
 `Localization` when constructing an edited model. Unity's updated editor and
 staged reload preserve both; older editors may drop this distinction.
