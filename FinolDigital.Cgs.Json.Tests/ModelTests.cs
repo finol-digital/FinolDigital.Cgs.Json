@@ -20,6 +20,52 @@ public class ModelTests
         Assert.Null(JObject.Parse(JsonConvert.SerializeObject(game, Settings))["localization"]);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ExplicitNullSurvivesSavingButPropertyClearingStillOmitsMetadata(bool ignoreNulls)
+    {
+        var settings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = ignoreNulls ? NullValueHandling.Ignore : NullValueHandling.Include,
+            DefaultValueHandling = DefaultValueHandling.Ignore
+        };
+        var game = JsonConvert.DeserializeObject<CardGame>("""{"name":"Standard Playing Cards","localization":null}""", settings)!;
+        Assert.Null(game.Localization);
+        Assert.True(game.LocalizationSpecified);
+        game.Name = "Edited";
+        var saved = JsonConvert.SerializeObject(game, settings);
+        Assert.Equal(JTokenType.Null, JObject.Parse(saved)["localization"]!.Type);
+        var loaded = JsonConvert.DeserializeObject<CardGame>(saved, settings)!;
+        Assert.True(loaded.LocalizationSpecified);
+        Assert.Null(loaded.Localization);
+        game.Localization = null;
+        Assert.False(game.LocalizationSpecified);
+        Assert.Null(JObject.Parse(JsonConvert.SerializeObject(game, settings))["localization"]);
+        game.LocalizationSpecified = true;
+        Assert.Equal(JTokenType.Null, JObject.Parse(JsonConvert.SerializeObject(game, settings))["localization"]!.Type);
+        game.Localization = new GameLocalization { DefaultLocale = "en" };
+        Assert.Equal("en", JObject.Parse(JsonConvert.SerializeObject(game, settings))["localization"]!["defaultLocale"]);
+    }
+
+    [Fact]
+    public void PopulateExplicitNullClearsPreviousCatalogAndPreservesOptOut()
+    {
+        var game = new CardGame { Localization = new GameLocalization { DefaultLocale = "en" } };
+        JsonConvert.PopulateObject("""{"name":"Base","localization":null}""", game);
+        Assert.Null(game.Localization);
+        Assert.True(game.LocalizationSpecified);
+        JsonConvert.PopulateObject("""{"name":"Base","copyright":"Changed"}""", game);
+        Assert.Equal(JTokenType.Null, JObject.Parse(JsonConvert.SerializeObject(game, Settings))["localization"]!.Type);
+        game.Localization = null;
+        JsonConvert.PopulateObject("""{"name":"Base"}""", game);
+        Assert.False(game.LocalizationSpecified);
+        Assert.Throws<JsonSerializationException>(() => JsonConvert.PopulateObject("{}", game));
+        game.Localization = null;
+        Assert.False(game.LocalizationSpecified);
+    }
+
     [Fact]
     public void AllCanonicalDictionaryKeysRoundTripUnderCamelCaseResolver()
     {

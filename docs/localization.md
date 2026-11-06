@@ -177,7 +177,8 @@ or clearing `Localization` also takes effect. This preservation applies to the
 Older tolerant readers can use the base content, but old strict schemas reject
 `localization`. **Old CGS editors may silently discard localization when saving.**
 Keep your source manifest or use an editor that preserves the new metadata.
-Removing/nulling localization on a successful reload disables bindings; CGS must
+Removing localization from a custom game, or explicitly nulling it for any game,
+disables bindings on a successful reload; CGS must
 stage and validate the new definition before publishing it and retain last-good
 state if loading fails. Existing saves, deck formats, and IDs require no migration.
 
@@ -274,3 +275,20 @@ Run `dotnet test FinolDigital.Cgs.Json.Tests`. Generate both schema files with
 runtime, or set `DOTNET_ROLL_FORWARD=Major` when using a newer runtime locally.
 Install `tests/requirements.txt` in a Python environment, then run
 `python3 -m unittest discover -s tests` for schema/URI-format and example checks.
+
+
+### Built-in games and explicit opt-out
+
+CGS ships catalogs for Standard Playing Cards, Mahjong, and Dominoes. Definitions
+with their exact shipped names and canonical update URLs receive a bundled
+catalog when the localization member is absent, including on reload. Custom
+games retain the absent-metadata fallback to canonical presentation. To disable
+this built-in fallback and the managed authored-deck choices, use
+`"localization": null`; an empty non-null manifest is not the same opt-out.
+
+When reading and saving through `CardGame`, authored null stays explicit and an
+absent member stays absent. Assigning `game.Localization = null` still removes
+the member. To write explicit null programmatically, assign null and then set
+`game.LocalizationSpecified = true`. Copy `LocalizationSpecified` together with
+`Localization` when constructing an edited model. Unity's updated editor and
+staged reload preserve both; older editors may drop this distinction.
