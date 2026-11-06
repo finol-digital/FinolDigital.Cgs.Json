@@ -38,6 +38,8 @@ Implementation progress is tracked below. Sections 1–3 belong to this reposito
 - [ ] 4.10 Document provenance lifecycle, canonical fallback without provenance, cached versus external rulebooks, and legacy-editor limitations; verify documented installation, export/import, and rollback against example games.
 - [x] 4.11 Add locale-reachability and coverage diagnostics using the actual selectable locale set plus default chains; verify `es-ES`/`zh-CN` warnings when unreachable without rejecting valid tags or enabling sibling matching.
 
+- [x] 4.12 Ship synchronized offline catalogs for all ten UI languages for Standard Playing Cards, Mahjong, and Dominoes; verify all authored labels, alternate backs, live switches, old-manifest fallback, explicit-null opt-out, and separately proven built-in decks without overwriting or reclassifying legacy/user files.
+
 ## 5. Verify the complete integration
 
 - [ ] 5.1 Exercise original English/Spanish/Japanese games, complete/partial catalogs, startup selection, repeated language switches, long labels, multiline rules, supported fonts, and offline use; record results against the surface inventory on desktop and mobile layouts.

@@ -35,3 +35,5 @@ None. This repository has no existing OpenSpec capabilities. The separate CGS `l
 - **Compatibility boundary:** old definitions work in new consumers. Old strict schemas can reject new optional fields, and old CGS editors can discard localization metadata when saving. Existing gameplay protocol contracts stay unchanged; mixed-capability sessions fall back to canonical shared-stack names where provenance is unavailable. This does not promise connectivity between previously incompatible CGS versions.
 
 This change is a proposal only. Implementation and downstream rollout are tracked in [tasks.md](tasks.md).
+
+Built-in content scope: ship complete offline catalogs for all ten UI languages for Standard Playing Cards, Mahjong, and Dominoes, including safe upgrades of existing installs and separately proven authored decks without modifying user files.

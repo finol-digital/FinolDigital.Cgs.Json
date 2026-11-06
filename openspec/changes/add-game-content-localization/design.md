@@ -174,3 +174,11 @@ The checked-in `.agents/skills` are unmodified OpenSpec 1.16.0 output and remain
 ## Example Provenance
 
 The user-provided [Suma o Muere](https://cgs.games/atoky/suma_o_muere) and [Hokuto no Ken](https://cgs.games/themadness/%E5%8C%97%E6%96%97%E3%81%AE%E6%8B%B3%E4%B8%96%E7%B4%80%E6%9C%AB%E3%82%AB%E3%83%BC%E3%83%89%E3%83%90%E3%83%88%E3%83%AB%E4%BC%9D%E8%AA%AC_hokuto_no_ken_card_battle) motivate non-English base-language coverage. Web fetch could not access their pages during drafting; no assumptions about their exact manifests are needed. The [examples](examples/README.md) are synthetic, not edits to those games.
+
+### Shipped default-game catalogs and upgrade behavior
+
+Standard Playing Cards, Mahjong, and Dominoes are first-party authored content and ship complete inline catalogs for the ten UI locales. Keep website manifests, StreamingAssets manifests, and Resources fallback packages synchronized from one maintained authoring table. Resources packages include canonical authored deck payloads so WebGL and older installations can use the feature before website deployment and without translation downloads. This is authored content, not runtime machine translation.
+
+The exact shipped name plus canonical update URL identifies the three fallback packages. On staged load, absent metadata receives the bundled catalog; any explicit localization member, including null, wins. This narrowly scoped default-game upgrade is the exception to absent-metadata rollback; custom games keep the existing contract. Optional package failures cannot prevent base-game loading.
+
+Fresh StreamingAssets decks include portable installation sidecars. Never infer legacy/user deck provenance from matching names or content. Where no valid authored artifact exists, install a separate canonical copy under `localization/default-decks/` with a `defaults/<filename>` sidecar key. Lists and startup deck loading use the proven artifact; existing user files retain their names and bytes. Managed copies are read-only originals; editing/saving creates a user deck through the existing path, which revokes any user-path binding. Locale switches do not reinstall decks or change generations. Explicit null hides the managed authored choices and returns to canonical behavior.
