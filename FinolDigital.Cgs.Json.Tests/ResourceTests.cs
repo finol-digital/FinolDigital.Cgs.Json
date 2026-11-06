@@ -77,6 +77,7 @@ public class ResourceTests
     [Theory]
     [InlineData("locales/espa%C3%B1ol.json")]
     [InlineData("%E7%94%BB%E5%83%8F/001.png")]
+    [InlineData("es%20%23%20%E6%97%A5%E6%9C%AC%E8%AA%9E.json")]
     public void EncodedInternationalPathsResolveAgainstRecordedOrigin(string reference)
     {
         var origin = LocalizationOrigin.Remote(new Uri("https://example.invalid/game/cgs.json"));
@@ -97,6 +98,8 @@ public class ResourceTests
     [InlineData("https://?x")]
     [InlineData("http://example.invalid:99999/x")]
     [InlineData("a#one#two")]
+    [InlineData("es%2.json")]
+    [InlineData("es%GG.json")]
     [InlineData("locales/español.json")]
     [InlineData("画像/001.png")]
     [InlineData("images/{cardName}.png")]
@@ -122,7 +125,7 @@ public class ResourceTests
         Directory.CreateDirectory(locales);
         File.WriteAllText(Path.Combine(locales,"es.json"),"{}");
         File.WriteAllText(Path.Combine(root,"card.png"),"image");
-        var specialNames=new[] {"card with space.png", "hash#asset.png", "percent%2e.png", "imágenes.png"};
+        var specialNames=new[] {"card with space.png", "hash#asset.png", "percent%2e.png", "imágenes.png", "es # 日本語.json"};
         foreach(var name in specialNames) File.WriteAllText(Path.Combine(root,name),"image");
         File.WriteAllText(Path.Combine(temp,"outside.png"),"outside");
         Directory.CreateSymbolicLink(Path.Combine(root,"escape"),temp);

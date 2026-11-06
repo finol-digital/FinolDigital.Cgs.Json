@@ -5,6 +5,7 @@ namespace FinolDigital.Cgs.Json
     using System.Linq;
     using System.IO;
     using System.Reflection;
+    using System.Text.RegularExpressions;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
@@ -73,9 +74,11 @@ namespace FinolDigital.Cgs.Json
             var separator = value.IndexOfAny(new[] { '/', '?', '#' });
             if (colon >= 0 && (separator < 0 || colon < separator)) return false;
             // CoreCLR rejects fragments in its relative-only well-formedness check.
-            // Validate the same text in an HTTP path context; this is syntax validation
-            // only and never supplies a resource origin or starts a request.
-            return Uri.IsWellFormedUriString("https://localization.invalid/" + value, UriKind.Absolute);
+            // Mono's IRI normalization also misclassifies encoded '#' next to encoded
+            // Unicode. Mask complete percent triplets only for syntax validation;
+            // incomplete/invalid escapes remain visible and the actual URI is unchanged.
+            var syntax = Regex.Replace(value, "%[0-9A-Fa-f]{2}", "x");
+            return Uri.IsWellFormedUriString("https://localization.invalid/" + syntax, UriKind.Absolute);
         }
 
         private static LocalizationReadResult<T> Read<T>(string json) where T : class
