@@ -43,7 +43,11 @@ not allowed. Percent-encode spaces and non-ASCII characters in paths, for exampl
 including `docs/rules.html#setup` and `#setup` for the containing document.
 Relative paths cannot contain a colon in their first segment: `https:es.json`
 is invalid; use a complete `https://host/path` URL or a relative path instead.
-Colons in later segments, queries, or fragments are allowed.
+Remote origins allow colons in later path segments, such as `docs/a:b.html`.
+Bundled origins reject colons anywhere in the decoded path, including encoded
+colons; avoid these filenames when packaging resources. Colons in queries or
+fragments are allowed for either origin. An unavailable bundled reference falls
+through to the next resource candidate and ultimately the canonical asset.
 Use an active URI format checker with the schemas. Runtime URI parsing may reject
 additional invalid authorities or ports; schema validation alone does not guarantee
 that a reference can be loaded.
@@ -177,10 +181,15 @@ Removing/nulling localization on a successful reload disables bindings; CGS must
 stage and validate the new definition before publishing it and retain last-good
 state if loading fails. Existing saves, deck formats, and IDs require no migration.
 
-Unchanged localization models preserve authored metadata when serialized. Editing
-that model serializes its validated contents; unknown members and quarantined
-catalog data may then be discarded. Keep the original authoring document when
-making such edits.
+Serializing a `CardGame` through its `CardGame.Localization` converter preserves
+authored metadata while the localization model is unchanged. Directly serializing
+`game.Localization` does not use that property-level converter and does not preserve
+retained unknown or invalid authored data. Editing the model writes its current
+contents; serialization does not validate those edits. Validate the edited manifest
+with `LocalizationJson.ReadManifest` and inspect its diagnostics before saving.
+For example, an invalid `DefaultLocale` can be written but makes localization
+unusable on reload. Unknown members and quarantined catalog data may be discarded
+when writing an edited model, so keep the original authoring document.
 
 The [example game](../examples/localization/README.md)
 contains Spanish/Japanese names, properties, booleans, and artwork references.
