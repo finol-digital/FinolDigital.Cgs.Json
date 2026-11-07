@@ -81,13 +81,15 @@ For each external catalog/image cache key, successful results SHALL be ordered b
 - **AND** concurrent requests for different locale/source/asset keys do not suppress one another's valid cache publications
 
 ### Requirement: Manifest replacement invalidates presentation bindings
-Every successful manifest reload SHALL replace localization state and advance its binding generation, even at an unchanged URL. Changed inline content SHALL be visible immediately. Missing/null localization SHALL disable localization immediately; old values SHALL NOT survive an in-place reload. A failed manifest load SHALL preserve the last successfully installed state.
+Successful manifest reloads SHALL replace localization and advance binding generation, even at the same URL. Inline changes SHALL appear immediately. Explicit null SHALL disable bindings; missing metadata SHALL disable them for custom games and select shipped catalogs for recognized defaults. Stale bindings SHALL NOT survive successful reloads. Failed loads SHALL preserve the last installed state.
 
 #### Scenario: Inline update and feature removal without restart
 - **WHEN** a game reloads a manifest whose inline Spanish name changed at the same source URL
 - **THEN** the new name replaces the old binding and earlier callbacks cannot restore it
-- **WHEN** the next successful reload removes or nulls localization
+- **WHEN** the next successful reload removes localization from a custom game, or explicitly nulls it for any game
 - **THEN** every game-content binding returns to canonical presentation without a restart, including bindings in already open views
+- **WHEN** a recognized default game reloads without localization metadata
+- **THEN** the bundled catalog replaces the previous manifest bindings without a restart
 
 ### Requirement: Offline caches survive game export and import
 Downloaded catalogs, images, recorded origins, and local cache mappings SHALL reside within the game directory and travel with game-package exports. Consumers SHALL resolve imported cache mappings relative to the new installation while preserving remote origin semantics. Missing caches or unsupported metadata SHALL fall back to canonical content without preventing import or play.
@@ -165,10 +167,17 @@ Consumers SHALL negotiate an optional versioned presentation capability separate
 - **THEN** it receives current authoritative references/revisions for the live stack incarnations
 - **AND** changing only a participant's locale sends no gameplay or provenance update
 
-#### Scenario: Session save has no matching provenance
+#### Scenario: Future session persistence has no matching provenance
+- **GIVEN** a consumer implements a session save/load feature (CGS currently does not, and this change does not add one)
 - **WHEN** a session is restored from a legacy save or a save with a mismatched provenance sidecar
 - **THEN** saved canonical names are preserved without inferred bindings
-- **AND** a matching optional sidecar can restore verified label references without altering the existing save format
+- **AND** session-sidecar implementation and verification apply only when that persistence feature exists; deck and live multiplayer provenance remain required independently
+
+#### Scenario: Future session persistence has matching provenance
+- **GIVEN** a consumer implements a session save/load feature (CGS currently does not, and this change does not add one)
+- **WHEN** a session is restored with a matching optional provenance sidecar
+- **THEN** the consumer can restore verified label references without altering the session format
+- **AND** this does not permit inferring bindings from a legacy save or a mismatched sidecar
 
 #### Scenario: Unlocalized games retain their network behavior
 - **WHEN** a game without localization is played between capable peers
@@ -180,3 +189,37 @@ Consumers SHALL render game text through supported locale font/layout handling, 
 #### Scenario: Non-Latin and multiline content
 - **WHEN** supported Japanese content and longer Spanish labels are shown in card viewers, deck lists, filters, and game dialogs
 - **THEN** glyphs and authored line breaks render correctly and controls keep their normal wrapping, scrolling, or other access to the complete text
+
+### Requirement: Default games ship complete offline language catalogs
+CGS SHALL ship authored presentation catalogs for Standard Playing Cards, Mahjong, and Dominoes in all ten selectable languages: `en`, `es`, `fr`, `de`, `it`, `ja`, `ko`, `pt-BR`, `ru`, and `zh-Hans`. Catalogs SHALL cover game, card, deck, set, property, enum, and applicable card-back labels without changing canonical identifiers, card/deck bytes, or artwork. Numeric domino names MAY remain identical across locales.
+
+#### Scenario: Default content follows the language picker offline
+- **WHEN** a player selects any supported UI language with a default game installed
+- **THEN** built-in card and authored-deck labels SHALL use that language, including generated alternate-back cards
+- **AND** catalogs SHALL be available from the build without requiring a website deployment or translation download
+- **AND** controls SHALL retain canonical keys while visible labels refresh
+
+#### Scenario: An existing default installation predates localization metadata
+- **WHEN** a definition with the exact shipped name and canonical update URL lacks a localization member
+- **THEN** CGS SHALL supply the corresponding bundled catalog
+- **AND** explicitly authored localization, including null, SHALL take precedence
+- **AND** other games without metadata SHALL retain canonical behavior
+
+#### Scenario: Legacy deck files are not evidence of authorship
+- **WHEN** a default game has existing deck files without valid provenance, even with identical names and bytes
+- **THEN** CGS SHALL preserve those files and their unproven status
+- **AND** separately install bundled authored decks with provenance so translated built-in choices remain available
+- **AND** fresh packaged authored files with valid sidecars SHALL not produce duplicate built-in choices
+
+#### Scenario: An upgrade does not duplicate unchanged built-in deck choices
+- **GIVEN** a default game's unmarked legacy deck has the canonical filename and exactly the bundled bytes
+- **WHEN** a separately proven managed original is available
+- **THEN** the picker SHALL show only the proven original while preserving the legacy file and its unproven status
+- **AND** modified, renamed, or explicitly user-saved copies SHALL remain separate; user writes SHALL persist that intent even when localization is disabled
+- **AND** disabling localization SHALL restore ordinary-file choices without requiring recovery of deleted data
+
+#### Scenario: An explicit default-game opt-out survives an editor save
+- **WHEN** a definition containing `localization: null` is loaded, edited, saved, and reloaded
+- **THEN** the explicit null SHALL remain present and bundled catalog/deck fallback SHALL remain disabled
+- **AND** definitions that never contained localization SHALL continue to omit it when saved
+- **AND** assigning the model's localization property to null SHALL retain its existing member-clearing behavior; callers requesting an explicit opt-out SHALL also retain or set the presence flag
