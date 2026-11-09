@@ -4,6 +4,7 @@ namespace FinolDigital.Cgs.Json
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
+    using System.Runtime.Serialization;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
 
@@ -29,6 +30,36 @@ namespace FinolDigital.Cgs.Json
         [Description(
             "The name of the custom card game as it appears to the user. This name is required for the *Game:Id*.")]
         public string Name { get; set; }
+
+        [JsonProperty("localization", NullValueHandling = NullValueHandling.Include, DefaultValueHandling = DefaultValueHandling.Include)]
+        [JsonConverter(typeof(GameLocalizationConverter))]
+        [Description("Optional authored game-content translations; canonical game data remains unchanged.")]
+        public GameLocalization? Localization
+        {
+            get => _localization;
+            set
+            {
+                _localization = value;
+                LocalizationSpecified = value != null || _readingJson;
+            }
+        }
+        private GameLocalization? _localization;
+        private bool _readingJson;
+
+        [OnDeserializing]
+        private void BeginReadingJson(StreamingContext context) => _readingJson = true;
+        [OnDeserialized]
+        private void EndReadingJson(StreamingContext context) => _readingJson = false;
+        [OnError]
+        private void EndFailedReadingJson(StreamingContext context, ErrorContext error) => _readingJson = false;
+
+        /// <summary>
+        /// Tracks a supplied localization member, including null, separately from absent metadata.
+        /// Absent legacy metadata stays omitted. Assigning Localization = null clears the member;
+        /// set this flag to true afterward to write an explicit null opt-out. Copy it with Localization.
+        /// </summary>
+        [JsonIgnore]
+        public bool LocalizationSpecified { get; set; }
 
         [JsonProperty]
         [Description(

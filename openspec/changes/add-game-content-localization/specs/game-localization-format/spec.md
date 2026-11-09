@@ -5,13 +5,19 @@ Let game authors supply optional translations and localized presentation resourc
 ## ADDED Requirements
 
 ### Requirement: Localization is an additive opt-in
-The game specification SHALL accept an optional `localization` object without changing existing required fields or types. When omitted, consumers SHALL preserve legacy parsing, presentation, identifiers, defaults, and serialization behavior and SHALL NOT request localization resources.
+The game specification SHALL accept optional `localization` without changing existing required fields or types. When omitted, the library and custom-game consumers SHALL preserve legacy parsing, presentation, identifiers, defaults, and serialization without localization requests. CGS MAY supply shipped catalogs for the three recognized default games under the presentation requirements.
 
 #### Scenario: Existing games need no migration
-- **WHEN** existing English, Spanish, and Japanese game definitions without localization are loaded under any UI locale
+- **WHEN** existing custom English, Spanish, and Japanese game definitions without localization are loaded under any UI locale
 - **THEN** their game-authored strings and canonical data remain unchanged
 - **AND** their deck exports, asset URL substitutions, and saved identities match the legacy results
 - **AND** serializing a game without localization does not introduce localization metadata
+
+
+#### Scenario: Explicit null and absent metadata remain distinct when saved
+- **WHEN** a game definition with `localization: null` is loaded and saved through `CardGame`
+- **THEN** null SHALL remain explicit, while absent metadata SHALL remain omitted
+- **AND** direct assignment of null to `Localization` SHALL clear the member; callers requesting explicit null SHALL set `LocalizationSpecified` afterward
 
 ### Requirement: Declare source locale and catalog sources
 A localization manifest SHALL require `defaultLocale`, describing the base content's language, and accept an optional `locales` map. Locale tags SHALL be valid BCP 47 tags and unique case-insensitively. Each locale source SHALL contain exactly one nonempty `url` URI reference or `inline` catalog object. No English or default-locale catalog SHALL be required.

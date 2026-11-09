@@ -6,6 +6,8 @@ permissions:
   contents: read
 
 on:
+  pull_request:
+    branches: [ "main" ]
   push:
     branches: [ "main" ]
   release:
@@ -35,9 +37,18 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: |
+          6.0.x
+          10.0.x
     - name: Build
       run: dotnet build --configuration Release /p:Version=${VERSION}
+    - name: Test library
+      run: dotnet test FinolDigital.Cgs.Json.Tests --configuration Release --no-build
+    - name: Validate schemas and author examples
+      run: |
+        python3 -m venv /tmp/cgs-schema-tests
+        /tmp/cgs-schema-tests/bin/pip install -r tests/requirements.txt
+        /tmp/cgs-schema-tests/bin/python -m unittest discover -s tests -v
     - name: Upload FinolDigital.Cgs.Json.dll
       uses: actions/upload-artifact@v7
       with:
@@ -46,12 +57,16 @@ jobs:
     - name: Generate schema
       run: dotnet SchemaGeneration/bin/Release/net6.0/SchemaGeneration.dll
     - name: Copy schema
-      run: cp cgs.json schema/
+      run: |
+        cp cgs.json GameLocalization.json schema/
+        git diff --exit-code -- schema/cgs.json schema/GameLocalization.json
     - name: Upload cgs.json
       uses: actions/upload-artifact@v7
       with:
         name: cgs.json
-        path: cgs.json
+        path: |
+          cgs.json
+          GameLocalization.json
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION}
     - name: Upload nuget package
