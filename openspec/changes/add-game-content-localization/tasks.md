@@ -28,23 +28,38 @@ Implementation progress is tracked below. Sections 1–3 belong to this reposito
 
 - [x] 4.1 Create the corresponding CGS change and adopt the updated package; deliver a display-surface inventory and verify canonical data flows remain separate from UI bindings.
 - [x] 4.2 Connect the locale event to catalog loading and generation-scoped refresh; reset localization only in a staged definition before repopulating it, then atomically replace live state and advance its generation only after loading and validation succeed and the definition is installable. Verify failed reads/validation retain the previous state and generation, alongside inline replacement at the same URL, absent/null removal, `autoUpdate < 0`, and rapid switches without restart.
-- [ ] 4.3 Persist definition/catalog origins and portable cache mappings with per-key ordering by request initiation and atomic publication; verify that when A starts before B, B publishes successfully, and A completes afterward, B's entry survives across locale switches/same-URI reloads and offline reopen/export. Also verify failed refreshes preserve last-good data without advancing the successful-publication order, cache replacement rejects prior-store writes, and origin resolution, path confinement, and relocation remain correct. Include the companion cgs-games final-URL header, redirect validation, CORS exposure, cached-response retention, and missing/invalid-header fallback in native/WebGL transport verification.
+- [x] 4.3 Persist definition/catalog origins and portable cache mappings with per-key ordering by request initiation and atomic publication; verify that when A starts before B, B publishes successfully, and A completes afterward, B's entry survives across locale switches/same-URI reloads and offline reopen/export. Also verify failed refreshes preserve last-good data without advancing the successful-publication order, cache replacement rejects prior-store writes, and origin resolution, path confinement, and relocation remain correct. Include the companion cgs-games final-URL header, redirect validation, CORS exposure, cached-response retention, and missing/invalid-header fallback in native/WebGL transport verification.
 - [x] 4.4 Add localized image loading with separately ordered atomic caches and rulebook link selection; verify the same initiation-order race as 4.3 keeps the later-initiated successful image when the earlier request completes afterward, failed regional variants fall back without overwriting originals, and cached images survive offline reopen/export/import.
-- [ ] 4.5 Bind names, boolean/property/enum/empty labels, card text, metadata, groups, zones, boards, backs, and dynamic messages using canonical control keys; verify active/new views, duplicate labels, empty-filter bits, and unselected game-list refresh without downloads.
+- [x] 4.5 Bind names, boolean/property/enum/empty labels, card text, metadata, groups, zones, boards, backs, and dynamic messages using canonical control keys; verify active/new views, duplicate labels, empty-filter bits, and unselected game-list refresh without downloads.
 - [x] 4.6 Add interactive translated search separately from canonical `FilterCards`, deck imports, and automatic `DeckPlayCards` queries; verify translated/canonical name collisions affect only interactive results and canonical filters/selections remain stable.
 - [x] 4.7 Add versioned local authored-deck provenance sidecars tied to installed artifacts; verify the first installation of an authored deck, legacy/unproven files, identical-name/content user replacements, rename/save-as, externally changed fingerprints, and package versus standalone-deck import.
 - [x] 4.8 Add named-message capability negotiation and idempotent versioned stack creation with canonical label references, preserving existing RPCs and creation rules; verify duplicate-name creations, request retries, capable/legacy host-client combinations, timeout/unsupported-version fallback, and no extension for unlocalized games.
 - [x] 4.9 Implement authoritative provenance snapshots and revision/incarnation handling; verify late join, reconnect, rename/despawn races, and invalid targets without transmitting localized text. Session-sidecar implementation and matching/mismatched saved-document tests are conditional on a future session save/load feature and are not a current release gate.
-- [ ] 4.10 Document provenance lifecycle, canonical fallback without provenance, cached versus external rulebooks, and legacy-editor limitations; verify documented installation, export/import, and rollback against example games.
+- [x] 4.10 Document provenance lifecycle, canonical fallback without provenance, cached versus external rulebooks, and legacy-editor limitations; verify documented installation, export/import, and rollback against example games.
 - [x] 4.11 Add locale-reachability and coverage diagnostics using the actual selectable locale set plus default chains; verify `es-ES`/`zh-CN` warnings when unreachable without rejecting valid tags or enabling sibling matching.
 
 - [x] 4.12 Ship synchronized offline catalogs for all ten UI languages for Standard Playing Cards, Mahjong, and Dominoes; verify all authored labels, alternate backs, live switches, old-manifest fallback, explicit-null opt-out, and separately proven built-in decks without overwriting or reclassifying legacy/user files.
 
 ## 5. Verify the complete integration
 
-- [ ] 5.1 Exercise original English/Spanish/Japanese games, complete/partial catalogs, startup selection, repeated language switches, long labels, multiline rules, supported fonts, and offline use; record results against the surface inventory on desktop and mobile layouts.
-- [ ] 5.2 Verify different-language and mixed-capability participants can load decks, play, and save decks with identical canonical gameplay state/messages; confirm verified names translate only where provenance is available and locale changes emit no gameplay/provenance updates.
+- [x] 5.1 Exercise original English/Spanish/Japanese games, complete/partial catalogs, startup selection, repeated language switches, long labels, multiline rules, supported fonts, and offline use; record results against the surface inventory on desktop and mobile layouts.
+- [x] 5.2 Verify different-language and mixed-capability participants can load decks, play, and save decks with identical canonical gameplay state/messages; confirm verified names translate only where provenance is available and locale changes emit no gameplay/provenance updates.
 - [ ] 5.3 Verify feature rollback by removing localization on an in-place reload, offline package relocation, and unselected-game refresh; confirm unchanged old games need no edits and retain existing files/exports/assets, and record the CGS release dependency.
+
+## Verification reconciliation (2026-11-08)
+
+Functional verification is complete from the combined automated, source-audit,
+and user-reported player evidence in the downstream
+[verification record](https://github.com/finol-digital/Card-Game-Simulator/blob/21b0a40cbceb27ef89cc5d531061252830af4108/developer-docs/game-content-localization.md#verification-reconciliation-2026-11-08).
+This includes Android/Windows, WebGL redirect and offline transfer, original
+Spanish/Japanese games, absent/null rollback, edited and identical user saves,
+filter/unsaved-edit preservation, and current/released-v1.170 multiplayer.
+The record distinguishes manual results from automated fault/serializer tests;
+it does not claim every case was manually run on every platform.
+
+Task 5.3 remains open for the reviewed library release and final CGS dependency
+adoption. Proxy #559 is deployed. Neither library #28 nor Unity #600 has been
+merged as part of this reconciliation. Archive only after that release gate closes.
 
 ## Workflow follow-up
 
