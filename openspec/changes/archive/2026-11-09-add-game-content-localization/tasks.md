@@ -44,7 +44,7 @@ Implementation progress is tracked below. Sections 1–3 belong to this reposito
 
 - [x] 5.1 Exercise original English/Spanish/Japanese games, complete/partial catalogs, startup selection, repeated language switches, long labels, multiline rules, supported fonts, and offline use; record results against the surface inventory on desktop and mobile layouts.
 - [x] 5.2 Verify different-language and mixed-capability participants can load decks, play, and save decks with identical canonical gameplay state/messages; confirm verified names translate only where provenance is available and locale changes emit no gameplay/provenance updates.
-- [ ] 5.3 Verify feature rollback by removing localization on an in-place reload, offline package relocation, and unselected-game refresh; confirm unchanged old games need no edits and retain existing files/exports/assets, and record the CGS release dependency.
+- [x] 5.3 Verify feature rollback by removing localization on an in-place reload, offline package relocation, and unselected-game refresh; confirm unchanged old games need no edits and retain existing files/exports/assets, and record the CGS release dependency.
 
 ## Verification reconciliation (2026-11-08)
 
@@ -57,9 +57,14 @@ filter/unsaved-edit preservation, and current/released-v1.170 multiplayer.
 The record distinguishes manual results from automated fault/serializer tests;
 it does not claim every case was manually run on every platform.
 
-Task 5.3 remains open for the reviewed library release and final CGS dependency
-adoption. Proxy #559 is deployed. Neither library #28 nor Unity #600 has been
-merged as part of this reconciliation. Archive only after that release gate closes.
+Task 5.3 is complete: library v1.15.0 was published from
+`f44e4176da5511439ead5cdbac40e92cb88c17f6`, and CGS adopted the exact released DLL
+and schemas. [Full CI run 42680518155](https://github.com/finol-digital/Card-Game-Simulator/actions/runs/42680518155)
+passed tests, quality checks, and all platform builds at `e0c77bad`. Unity PR #600
+merged as `bf4452590317b985d2a446913cc01452c8d72d33`. Proxy #559 is deployed; the
+GitHub Pages deployment following dependency PR #602 also succeeded on rerun.
+These records close the integration dependency; a future public CGS app release
+is separate from this implementation archive.
 
 ## Workflow follow-up
 
