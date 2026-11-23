@@ -95,6 +95,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: finol-digital/Card-Game-Simulator
+          ref: develop
           token: ${{ secrets.CGS_PAT }}
           path: Card-Game-Simulator
           lfs: true
@@ -114,6 +115,7 @@ jobs:
           token: ${{ secrets.CGS_PAT }}
           path: Card-Game-Simulator
           branch: cgsjson-${{ needs.build.outputs.version }}
+          base: develop
           title: FinolDigital.Cgs.Json ${{ needs.build.outputs.version }}
 #    - name: Raise PR for schema
 #      if: github.event.action == 'published'
