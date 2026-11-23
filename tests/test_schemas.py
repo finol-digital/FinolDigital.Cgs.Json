@@ -7,6 +7,8 @@ import unittest
 from jsonschema import Draft4Validator, FormatChecker
 
 ROOT = Path(__file__).resolve().parents[1]
+ADDED_DECK_FILE_TYPES = {'Svd': 'svd'}
+DESCRIBES_ADDED_DECK_FILE_TYPES = ('deckFileAltId', 'deckFileType')
 
 def read(path):
     return json.loads((ROOT / path).read_text(encoding="utf-8"))
@@ -27,6 +29,14 @@ class Schemas(unittest.TestCase):
         new = copy.deepcopy(self.game.schema)
         del new['properties']['localization']
         new['definitions'] = {k: v for k, v in new['definitions'].items() if k in old['definitions']}
+        # Descriptions updated to document deck types added since then.
+        for name in DESCRIBES_ADDED_DECK_FILE_TYPES:
+            new['properties'][name]['description'] = old['properties'][name]['description']
+        # Deck types added since then; older CGS versions cannot load a game that uses one.
+        deck_types = new['definitions']['DeckFileType']
+        for name, value in ADDED_DECK_FILE_TYPES.items():
+            deck_types['x-enumNames'].remove(name)
+            deck_types['enum'].remove(value)
         self.assertEqual(old, new)
 
     def test_examples(self):
