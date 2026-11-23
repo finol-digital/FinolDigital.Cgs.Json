@@ -48,6 +48,7 @@ public class StarvoxelDeckTests
     [InlineData("https://starvoxel.com/decks?deck=SVD3-000107090306020BW")]
     [InlineData("https://starvoxel.com/decks?lang=en&deck=SVD3-000107090306020BW&utm_source=deck_share#builder")]
     [InlineData("https://starvoxel.com/decks?deck=SVD3%2D000107090306020BW")]
+    [InlineData("https://starvoxel.com/decks?utm_content=deck=share&deck=SVD3-000107090306020BW")]
     public void DecodingAcceptsWhatStarvoxelAccepts(string text)
     {
         Assert.True(StarvoxelDeckEncoder.TryDecode(text, out var ids));
@@ -65,6 +66,8 @@ public class StarvoxelDeckTests
     [InlineData("SVD3-000107090306020UW")] // U is not in the alphabet
     [InlineData("SVD3-00000000000000000")] // Same card eight times, with a valid check symbol
     [InlineData("https://starvoxel.com/redeck=SVD3-000107090306020BW")]
+    [InlineData("https://starvoxel.com/decks?redeck=SVD3-000107090306020BW")]
+    [InlineData("https://starvoxel.com/decks?utm_content=deck=SVD3-000107090306020BW")]
     public void DecodingRejectsInvalidCodes(string? text)
     {
         Assert.False(StarvoxelDeckEncoder.TryDecode(text, out var ids));

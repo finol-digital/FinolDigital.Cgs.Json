@@ -83,22 +83,30 @@ namespace FinolDigital.Cgs.Json.Decks
         private static string ExtractCode(string? text)
         {
             var trimmed = (text ?? string.Empty).Trim();
-            var queryIndex = trimmed.IndexOf(DeckQueryKey, StringComparison.OrdinalIgnoreCase);
-            if (queryIndex < 0 || (queryIndex > 0 && trimmed[queryIndex - 1] != '?' && trimmed[queryIndex - 1] != '&'))
+            var queryStart = trimmed.IndexOf('?');
+            if (queryStart < 0)
                 return trimmed;
 
-            var value = trimmed.Substring(queryIndex + DeckQueryKey.Length);
-            var end = value.IndexOfAny(new[] { '&', '#' });
-            if (end >= 0)
-                value = value.Substring(0, end);
-            try
+            var query = trimmed.Substring(queryStart + 1);
+            var fragmentStart = query.IndexOf('#');
+            if (fragmentStart >= 0)
+                query = query.Substring(0, fragmentStart);
+            foreach (var parameter in query.Split('&'))
             {
-                return Uri.UnescapeDataString(value.Replace('+', ' ')).Trim();
+                if (!parameter.StartsWith(DeckQueryKey, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                var value = parameter.Substring(DeckQueryKey.Length);
+                try
+                {
+                    return Uri.UnescapeDataString(value.Replace('+', ' ')).Trim();
+                }
+                catch (UriFormatException)
+                {
+                    return value;
+                }
             }
-            catch (UriFormatException)
-            {
-                return value;
-            }
+
+            return trimmed;
         }
 
         private static char Normalize(char symbol)
