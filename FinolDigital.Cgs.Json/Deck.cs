@@ -19,7 +19,8 @@ namespace FinolDigital.Cgs.Json
         [EnumMember(Value = "hsd")] Hsd,
         [EnumMember(Value = "lor")] Lor,
         [EnumMember(Value = "txt")] Txt,
-        [EnumMember(Value = "ydk")] Ydk
+        [EnumMember(Value = "ydk")] Ydk,
+        [EnumMember(Value = "svd")] Svd
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -170,6 +171,39 @@ namespace FinolDigital.Cgs.Json
             return LoRDeckEncoder.GetCodeFromDeck(cardCodeAndCounts) + Environment.NewLine;
         }
 
+        public const string IncompleteSvdComment =
+            "# Not a Starvoxel deck code yet: a deck needs exactly 8 different cards";
+
+        /// <summary>
+        /// Returns the SVD3 code when the deck has exactly 8 different cards, so it can be pasted into Starvoxel.
+        /// Otherwise lists each card's <see cref="CardGame.DeckFileAltId"/> (or its id, if that is empty) on its own line,
+        /// so unfinished decks still save.
+        /// </summary>
+        public string ToSvd()
+        {
+            var altIds = Cards.Select(card => card.GetPropertyValueString(SourceGame.DeckFileAltId)).ToList();
+            var cardIds = new List<int>(altIds.Count);
+            foreach (var altId in altIds)
+            {
+                if (!int.TryParse(altId, System.Globalization.NumberStyles.None,
+                        System.Globalization.CultureInfo.InvariantCulture, out var cardId))
+                    break;
+                cardIds.Add(cardId);
+            }
+
+            if (cardIds.Count == altIds.Count && StarvoxelDeckEncoder.CanEncode(cardIds))
+                return StarvoxelDeckEncoder.Encode(cardIds) + Environment.NewLine;
+
+            var text = new StringBuilder();
+            text.Append(IncompleteSvdComment).Append(Environment.NewLine);
+            foreach (var card in Cards)
+            {
+                var altId = card.GetPropertyValueString(SourceGame.DeckFileAltId);
+                text.Append(string.IsNullOrEmpty(altId) ? card.Id : altId).Append(Environment.NewLine);
+            }
+            return text.ToString();
+        }
+
         public string ToYdk()
         {
             var text = "#created by Card Game Simulator" + Environment.NewLine;
@@ -255,6 +289,9 @@ namespace FinolDigital.Cgs.Json
                     break;
                 case DeckFileType.Lor:
                     text = ToLor();
+                    break;
+                case DeckFileType.Svd:
+                    text = ToSvd();
                     break;
                 case DeckFileType.Ydk:
                     text = ToYdk();

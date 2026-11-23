@@ -57,6 +57,7 @@ public class CompatibilityTests
     [InlineData(DeckFileType.Dec)]
     [InlineData(DeckFileType.Hsd)]
     [InlineData(DeckFileType.Lor)]
+    [InlineData(DeckFileType.Svd)]
     [InlineData(DeckFileType.Txt)]
     [InlineData(DeckFileType.Ydk)]
     public void EveryDeckExportAndCanonicalQueryIsIdenticalAcrossLocales(DeckFileType type)

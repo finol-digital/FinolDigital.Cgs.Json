@@ -318,7 +318,7 @@ namespace FinolDigital.Cgs.Json
 
         [JsonProperty]
         [Description(
-            "When saving or loading a deck with <deckFileType> NOT txt, deckFileAltId refers to the *Card:Property* used to uniquely identify each Card. For hsd, this is stored as a varint within the deck string.")]
+            "When saving or loading a deck with <deckFileType> NOT txt, deckFileAltId refers to the *Card:Property* used to uniquely identify each Card. For hsd, this is stored as a varint within the deck string. For svd, this must be an integer from 0 to 1023.")]
         [DefaultValue("dbfId")]
         public string DeckFileAltId { get; set; } = "dbfId";
 
@@ -330,7 +330,7 @@ namespace FinolDigital.Cgs.Json
 
         [JsonProperty]
         [Description(
-            "When saving a deck, the formatting for how it is saved and loaded is defined by the deckFileType. dec refers to the old MTGO deck file format. hsd refers to the Hearthstone deck string format. ydk refers to the YGOPRO deck file format. txt parses each line for the following: <Quantity> [*Card:Id*] *Card:Name* (*Card:SetCode*).")]
+            "When saving a deck, the formatting for how it is saved and loaded is defined by the deckFileType. dec refers to the old MTGO deck file format. hsd refers to the Hearthstone deck string format. ydk refers to the YGOPRO deck file format. svd refers to the Starvoxel SVD3 deck code, which holds exactly 8 different cards in order; other decks are saved with one <deckFileAltId> per line. txt parses each line for the following: <Quantity> [*Card:Id*] *Card:Name* (*Card:SetCode*).")]
         [DefaultValue("txt")]
         public DeckFileType DeckFileType { get; set; } = DeckFileType.Txt;
 
